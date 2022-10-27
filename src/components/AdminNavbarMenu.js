@@ -41,13 +41,21 @@ const AdminNavbarMenu = (props) => {
       activeKey === "/admin"
     ) {
       activeMenutabContainer("containerAdminRcmDashboard");
+    } else if (
+      activeKey === "/user"
+    ) {
+      activeMenutabContainer("containerAdminRcmSystem");
     }
-    if (
+    
+    else if (
       activeKey === "/category_product_type" ||
       activeKey === "/category_role" ||
-      activeKey === "/categoryProductTag"
+      activeKey === "/category_product_tag" ||
+      activeKey === "/category_vn_province" ||
+      activeKey === "/category_vn_district" ||
+      activeKey === "/category_vn_ward"
     ) {
-      activeMenutabContainer("containerRcmCategory");
+      activeMenutabContainer("containerAdminRcmCategory");
     } else if (
       activeKey === "/dashboard" ||
       activeKey === "/demographic" ||
@@ -575,7 +583,7 @@ const AdminNavbarMenu = (props) => {
                               className="has-arrow"
                               onClick={e => {
                                 e.preventDefault();
-                                activeMenutabContainer("containerAdminRcmDashboard")
+                                activeMenutabContainer("containerAdminRcmDashboard");
                               }}
                             >
                               <i className="icon-home"/> <span>Dashboard</span>
@@ -587,26 +595,53 @@ const AdminNavbarMenu = (props) => {
                             </ul>
                           </li>
 
-                          <li className="" id="containerRcmCategory">
+                          <li className="" id="containerAdminRcmCategory">
                             <a
                               href="#!"
                               className="has-arrow"
                               onClick={(e) => {
                                 e.preventDefault();
-                                activeMenutabContainer("containerRcmCategory");
+                                activeMenutabContainer("containerAdminRcmCategory");
                               }}
                             >
                               <i className="fa fa-cubes"></i> <span>Danh mục</span>
                             </a>
                             <ul className="collapse">
-                              <li className={activeKey === "category_product_type" ? "active" : ""}>
-                                <Link to="category_product_type">Loại sản phẩm</Link>
-                              </li>
                               <li className={activeKey === "category_role" ? "active" : ""}>
                                 <Link to="category_role">Vai trò</Link>
                               </li>
-                              <li className={activeKey === "categoryProductTag" ? "active" : ""}>
-                                <Link to="categoryProductTag">Nhãn dán</Link>
+                              <li className={activeKey === "category_vn_province" ? "active" : ""}>
+                                <Link to="category_vn_province">Đơn vị hành chính tỉnh</Link>
+                              </li>
+                              <li className={activeKey === "category_vn_district" ? "active" : ""}>
+                                <Link to="category_vn_district">Đơn vị hành chính huyện</Link>
+                              </li>
+                              <li className={activeKey === "category_vn_ward" ? "active" : ""}>
+                                <Link to="category_vn_ward">Đơn vị hành chính xã</Link>
+                              </li>
+                              <li className={activeKey === "category_product_type" ? "active" : ""}>
+                                <Link to="category_product_type">Loại sản phẩm</Link>
+                              </li>
+                              <li className={activeKey === "category_product_tag" ? "active" : ""}>
+                                <Link to="category_product_tag">Nhãn sản phẩm</Link>
+                              </li>
+                            </ul>
+                          </li>
+                          
+                          <li id="containerAdminRcmSystem">
+                            <a
+                              href="#!"
+                              className="has-arrow"
+                              onClick={e => {
+                                e.preventDefault();
+                                activeMenutabContainer("containerAdminRcmSystem");
+                              }}
+                            >
+                              <i className="icon-support"/> <span>Hệ thống</span>
+                            </a>
+                            <ul className="collapse">
+                              <li className={activeKey === "user" ? "active" : ""}>
+                                <Link to="user">Người dùng</Link>
                               </li>
                             </ul>
                           </li>

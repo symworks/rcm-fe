@@ -72,6 +72,11 @@ import paymentInfo from "./screens/rcm/PaymentInfo";
 import adminRcmDashboard from "./screens/admin/RcmDashboard";
 import adminRcmProductType from "./screens/admin/ProductType";
 import adminRcmCategoryRole from "./screens/admin/CategoryRole";
+import adminRcmCategoryProductTag from "./screens/admin/CategoryProductTag";
+import adminRcmCategoryVnProvince from "./screens/admin/CategoryVnProvince";
+import adminRcmCategoryVnDistrict from "./screens/admin/CategoryVnDistrict";
+import adminRcmCategoryVnWard from "./screens/admin/CategoryVnWard";
+import adminRcmUser from "./screens/admin/User";
 
 import ScrollToTop from "react-scroll-to-top";
 
@@ -216,6 +221,31 @@ const App = (props) => {
                   exact
                   path={`${process.env.PUBLIC_URL}/category_role`}
                   component={adminRcmCategoryRole}
+                />
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/category_product_tag`}
+                  component={adminRcmCategoryProductTag}
+                />
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/category_vn_province`}
+                  component={adminRcmCategoryVnProvince}
+                />
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/category_vn_district`}
+                  component={adminRcmCategoryVnDistrict}
+                />
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/category_vn_ward`}
+                  component={adminRcmCategoryVnWard}
+                />
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/user`}
+                  component={adminRcmUser}
                 />
                 <Route
                   exact

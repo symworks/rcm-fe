@@ -2,13 +2,15 @@ import "gridjs/dist/theme/mermaid.css";
 import { Grid, _ } from "gridjs-react";
 import React from "react";
 import { REACT_APP_PUBLIC_BACKEND_URL } from "../../constant/constant";
-import CategoryRoleModal from "./CategoryRoleModal";
 import viVN from "../../locales/gridjs/viVN";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import CategoryVnWardModal from "./CategoryVnWardModal";
+import CategoryVnWardBar from "./CategoryVnWardBar";
 
-function CategoryRoleGrid() {
+function CategoryVnWardGrid() {
   const modalRef = React.useRef(undefined);
   const [forceRenderState, setForceRenderState] = React.useState(false);
+  const [selectedDistrictState, setSelectedDistrictState] = React.useState(undefined);
 
   const handleFinal = () => {
     setForceRenderState(prev => !prev);
@@ -16,38 +18,31 @@ function CategoryRoleGrid() {
 
   return (
     <div>
-      <CategoryRoleModal ref={modalRef} handleAddFinal={handleFinal} handleUpdateFinal={handleFinal} handleDeleteFinal={handleFinal}/>
-      <div className="d-flex justify-content-start mb-2">
-        <button className="btn btn-outline-info mr-2" onClick={() => {modalRef?.current && modalRef.current.handleAdd();}}>
-          <span className="fa fa-plus"></span> Thêm
-        </button>
-      </div>
+      <CategoryVnWardModal ref={modalRef} handleAddFinal={handleFinal} handleUpdateFinal={handleFinal} handleDeleteFinal={handleFinal}/>
+      <CategoryVnWardBar
+        handleAdd={() => {modalRef.current && modalRef.current.handleAdd()}}
+        value={selectedDistrictState}
+        setValue={setSelectedDistrictState}
+      />
       <Grid
         columns={[
           "Id",
-          "Mã vai trò",
-          "Tên vai trò",
-          {
-            name: "Hệ thống",
-            formatter: (text) => _(
-            <b>
-              {text == true ? (
-                <span className="badge badge-success"><span className="fa fa-check"/></span>
-              ) : (
-                <span className="badge badge-danger"><span className="fa fa-times"/></span>
-              )}
-            </b>
-            )
-          },
+          "Mã xã",
+          "Tên xã",
           {
             name: "Thao tác",
             sort: false
           },
         ]}
         server={{
-          url: `${REACT_APP_PUBLIC_BACKEND_URL}/api/category_role`,
+          url: `${REACT_APP_PUBLIC_BACKEND_URL}/api/category_vn_ward?match_col=category_vn_district_id&match_key=${selectedDistrictState?.value}`,
           data: (opts) => {
             return new Promise((resolve, reject) => {
+              if (opts.url.includes('undefined')) {
+                reject();
+                return;
+              }
+
               const xhttp = new XMLHttpRequest();
               xhttp.withCredentials = true;
               xhttp.onreadystatechange = function() {
@@ -56,11 +51,10 @@ function CategoryRoleGrid() {
                     const resp = JSON.parse(this.response);
 
                     resolve({
-                      data: resp.payload.data.map(categoryRole => [
-                        categoryRole.id,
-                        categoryRole.code,
-                        categoryRole.name,
-                        categoryRole.is_system_role,
+                      data: resp.payload.data.map(categoryVnWard => [
+                        categoryVnWard.id,
+                        categoryVnWard.code,
+                        categoryVnWard.name,
                         _(
                           <div className="d-flex justify-content-start">
                             <OverlayTrigger
@@ -71,7 +65,7 @@ function CategoryRoleGrid() {
                                 </Tooltip>
                               }
                             >
-                              <button className="btn btn-outline-info mr-2" onClick={() => {modalRef?.current && modalRef.current.handleEdit(categoryRole);}}><span className="icon icon-pencil"/></button>
+                              <button className="btn btn-outline-info mr-2" onClick={() => {modalRef?.current && modalRef.current.handleEdit(categoryVnWard);}}><span className="icon icon-pencil"/></button>
                             </OverlayTrigger>
 
                             <OverlayTrigger
@@ -82,7 +76,7 @@ function CategoryRoleGrid() {
                                 </Tooltip>
                               }
                             >
-                              <button className="btn btn-outline-danger" onClick={() => {modalRef?.current && modalRef.current.handleDelete(categoryRole);}}><span className="fa fa-trash-o"/></button>
+                              <button className="btn btn-outline-danger" onClick={() => {modalRef?.current && modalRef.current.handleDelete(categoryVnWard);}}><span className="fa fa-trash-o"/></button>
                             </OverlayTrigger>
                           </div>
                         )            
@@ -121,7 +115,7 @@ function CategoryRoleGrid() {
 
               const col = columns[0];
               const dir = col.direction === 1 ? 'asc' : 'desc';
-              let colName = ['id', 'code', 'name', 'is_system_role'][col.index];
+              let colName = ['id', 'code', 'name'][col.index];
 
               return `${prev}`.includes('?') ? `${prev}&order_col=${colName}&order_key=${dir}` : `${prev}?order_col=${colName}&order_key=${dir}`
             }
@@ -132,4 +126,4 @@ function CategoryRoleGrid() {
   );
 }
 
-export default CategoryRoleGrid;
+export default CategoryVnWardGrid;

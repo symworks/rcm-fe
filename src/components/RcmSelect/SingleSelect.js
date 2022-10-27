@@ -3,25 +3,27 @@ import Select from 'react-select';
 import { Controller } from 'react-hook-form';
 
 const SingleSelect
- = ({name, placeholder, options, control, onChangeInteract}) => {
+ = ({name, placeholder, options, control, onChangeInteract, ...rest}) => {
   return (
-    <Controller
-      name={name}
-      control={control}
-      render={({field: {onChange, onBlur, value, name, ref}}) => {
-        return (
-          <Select
-            onBlur={onBlur}
-            value={value}
-            name={name}
-            ref={ref}
-            options={options}
-            placeholder={placeholder}
-            onChange={(newValue) => {onChange(newValue); if (onChangeInteract) onChangeInteract(newValue.value)}}
-          />
-        )
-      }}
-    />  
+    <div {...rest}>
+      <Controller
+        name={name}
+        control={control}
+        render={({field: {onChange, onBlur, value, name, ref}}) => {
+          return (
+            <Select
+              onBlur={onBlur}
+              value={value}
+              name={name}
+              ref={ref}
+              options={options}
+              placeholder={placeholder}
+              onChange={(newValue) => {onChange(newValue); if (onChangeInteract) onChangeInteract(newValue.value)}}
+            />
+          )
+        }}
+      />
+    </div>  
   )
 }
 

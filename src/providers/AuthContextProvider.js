@@ -20,7 +20,7 @@ export const AuthContextProvider = ({children}) => {
 
   React.useEffect(() => {
     createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get('/api/user', {withCredentials: true})
+    .get('/api/user/self', {withCredentials: true})
     .then(response => {
       if (response.data.error_code == 200) {
         setAuthState({
