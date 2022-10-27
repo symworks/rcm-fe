@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Route, Switch, withRouter} from "react-router-dom";
+import { Route, Router, Switch, withRouter} from "react-router-dom";
 import Login from "./screens/Login";
 import dashboard from "./screens/Dashbord/Dashbord";
 import demographic from "./screens/Dashbord/Demographic";
@@ -65,6 +65,8 @@ import PublicNavbarMenu from "./components/PublicNavbarMenu";
 import rcm from "./screens/Rcm";
 import productList from "./screens/rcm/ProductList";
 import productDetail from "./screens/rcm/ProductDetail";
+import cart from "./screens/rcm/Cart";
+import paymentInfo from "./screens/rcm/PaymentInfo";
 
 import ScrollToTop from "react-scroll-to-top";
 
@@ -174,6 +176,16 @@ class App extends React.Component {
                   exact
                   path={`${process.env.PUBLIC_URL}/rcm/product_detail`}
                   component={productDetail}
+                />
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/rcm/cart`}
+                  component={cart}
+                />
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/rcm/payment_info`}
+                  component={paymentInfo}
                 />
               </Switch>
             </div>

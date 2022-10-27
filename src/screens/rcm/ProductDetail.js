@@ -11,6 +11,8 @@ import StarRatings from "react-star-ratings";
 import { Card, Image, OverlayTrigger, ProgressBar, Tooltip } from 'react-bootstrap';
 import moment from "moment";
 import EvaluateModal from './EvaluateModal';
+import {useHistory} from 'react-router-dom';
+import _ from 'lodash';
 
 const qs = require('query-string');
 
@@ -25,6 +27,7 @@ const ProductDetail = () => {
 
   const [productEvaluatesPaginate, setProductEvaluatesPaginate] = React.useState(undefined);
   const [activeProductVersion, setActiveProductVersion] = React.useState(0);
+  const [activeProductColorQty, setActiveProductColorQty] = React.useState(0);
 
   const [loadingProductCount, setLoadingProductCount] = React.useState(0);
   const [loadingProductVersionsCount, setLoadingProductVersionsCount] = React.useState(0);
@@ -180,6 +183,116 @@ const ProductDetail = () => {
     });
   }
 
+  const handleAfterSubmitEvaluateModal = () => {
+    setLoadingProductCount(prev => ++prev);
+    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product/product_id/${parsed.id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error_code === 200 && data?.payload.length === 1) {
+        setProduct(data.payload[0]);
+        for (let i = 1; i < 6; ++i) {
+          if (data?.payload[0][`image_${i}`] !== undefined) {
+            setImages((prev) => ([
+              ...prev,
+              {
+                original: data.payload[0][`image_${i}`],
+                thumbnail: data.payload[0][`image_${i}`],
+              }
+            ]));
+          }
+        }
+      }
+
+      setLoadingProductCount(prev => --prev);
+
+      setLoadMoreCount(prev => ++prev);
+      fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_evaluate/with_created_user?per_page=15&product_id=${parsed.id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error_code === 200) {
+          setProductEvaluates(data?.payload?.data);
+          setProductEvaluatesPaginate({
+            ...data?.payload,
+            data: undefined,
+          })
+        }
+
+        setLoadMoreCount(prev => --prev);
+      })
+      .catch(error => {
+        console.error(error);
+
+        setLoadMoreCount(prev => --prev);
+      });
+    })
+    .catch(error => {
+      console.error(error);
+      setLoadingProductCount(prev => --prev);
+    })
+  };
+
+  const history = useHistory();
+
+  const handleByNowClick = () => {
+    var storageProducts = JSON.parse(localStorage.getItem('products'));
+    if (!storageProducts) {
+      storageProducts = [];
+    }
+
+    var doNotUpdateStorage = false;
+    for (let i = 0; i < storageProducts.length; i++) {
+      if (storageProducts[i].productId == parsed.id && 
+            productVersions?.data.length > 0 &&
+            storageProducts[i].productVersion &&
+            storageProducts[i].productVersion.id == productVersions.data[activeProductVersion].id && 
+            productColorQties?.data.length > 0 &&
+            storageProducts[i].productColorQty &&
+            storageProducts[i].productColorQty.id == productColorQties.data[activeProductColorQty].id) {
+        doNotUpdateStorage = true;
+        break;
+      }
+    }
+
+    if (!doNotUpdateStorage) {
+      var needUpdate = {
+        productId: parseInt(parsed.id),
+        qty: 1,
+      }
+  
+      if (productVersions?.data.length > 0) {
+        needUpdate.productVersion = {
+          id: productVersions.data[activeProductVersion].id,
+          name: productVersions.data[activeProductVersion].name,
+        }
+      }
+  
+      if (productColorQties?.data.length > 0) {
+        needUpdate.productColorQty = {
+          id: productColorQties.data[activeProductColorQty].id,
+          name: productColorQties.data[activeProductColorQty].name,
+        }
+      }
+  
+      localStorage.setItem('products', JSON.stringify(_.union(storageProducts, [needUpdate])));
+    }
+
+    history.push('/rcm/cart');
+  };
+
+  const handleAddToCartClick = () => {
+
+  };
+
   return (
     <div className="container-xl pt-3" style={{flex: 1}}>
       {
@@ -288,7 +401,8 @@ const ProductDetail = () => {
                     return (
                       <div key={index} className="col-sm-6 col-lg-4 px-1 mt-2">
                         <button
-                          className={`w-100 h-100 btn btn-outline-info`}
+                          onClick={() => {setActiveProductColorQty(index)}}
+                          className={activeProductColorQty === index ? "w-100 h-100 btn btn-info" : "w-100 h-100 btn btn-outline-info"}
                         >
                           <span className="font-weight-bold h6">{productColorQty?.name}</span>
                         </button>
@@ -302,7 +416,7 @@ const ProductDetail = () => {
 
           <div className="row">
             <div className="col-10 mt-3 px-1">
-              <button className="btn btn-danger w-100">
+              <button className="btn btn-danger w-100" onClick={handleByNowClick}>
                 <div className="d-flex align-item-center flex-column py-1">
                   <span>Mua ngay</span>
                   <span>(Giao hàng tận nơi)</span>
@@ -317,7 +431,7 @@ const ProductDetail = () => {
                   </Tooltip>
                 }
               >
-                <button className="btn btn-outline-info h-100 w-100">
+                <button className="btn btn-outline-info h-100 w-100" onClick={handleAddToCartClick}>
                   <span className="fa fa-shopping-cart"></span>
                 </button>
               </OverlayTrigger>
@@ -415,7 +529,7 @@ const ProductDetail = () => {
 
               <div className="d-flex align-items-center flex-column mt-3">
                 <span>Bạn đánh giá sao sản phẩm này?</span>
-                <EvaluateModal className="mt-2"/>
+                <EvaluateModal className="mt-2" productId={parsed.id} handleAfterSubmitEvaluateModal={handleAfterSubmitEvaluateModal}/>
               </div>
 
               <div className="mt-4">
@@ -440,7 +554,7 @@ const ProductDetail = () => {
                               <div>
                                 <StarRatings
                                   starRatedColor="orange"
-                                  rating={productEvaluate.num_star}
+                                  rating={productEvaluate.rate_value}
                                   numberOfStars={5}
                                   starDimension="14px"
                                   starSpacing="2px"
@@ -479,7 +593,20 @@ const ProductDetail = () => {
             </Card.Body>
           </Card>
         </div>
-        <div className="col-sm-12 col-sm-4">
+        <div className="col-sm-12 col-lg-4">
+
+        </div>
+      </div>
+
+      <div className="row mt-3">
+        <div className="col-sm-12 col-lg-4">
+          <form>
+            <div className="form-group">
+
+            </div>
+          </form>
+        </div>
+        <div className="col-sm-12 col-lg-8">
 
         </div>
       </div>
