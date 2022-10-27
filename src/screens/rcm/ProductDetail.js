@@ -97,7 +97,7 @@ const ProductDetail = () => {
 
     setLoadingProductCount(prev => ++prev);
     createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get(`/api/product?id=${productVersions[activeProductVersionIdx].product_id}&use_paginate=false`, {withCredentials: true})
+    .get(`/api/product?match_col=id&match_key=${productVersions[activeProductVersionIdx].product_id}&use_paginate=false`, {withCredentials: true})
     .then(response => {
       if (response.data.error_code === 200 && response.data.payload.length > 0) {
         setProduct(response.data.payload[0]);

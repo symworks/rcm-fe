@@ -44,7 +44,8 @@ const AdminNavbarMenu = (props) => {
     } else if (
       activeKey === "/user" ||
       activeKey === "/product" ||
-      activeKey === "/store"
+      activeKey === "/store" ||
+      activeKey === "/product_version"
     ) {
       activeMenutabContainer("containerAdminRcmSystem");
     }
@@ -654,6 +655,9 @@ const AdminNavbarMenu = (props) => {
                               </li>
                               <li className={activeKey === "product" ? "active" : ""}>
                                 <Link to="product">Sản phẩm</Link>
+                              </li>
+                              <li className={activeKey === "product_version" ? "active" : ""}>
+                                <Link to="product_version">Dòng sản phẩm</Link>
                               </li>
                             </ul>
                           </li>

@@ -35,7 +35,7 @@ const Rcm = () => {
   React.useEffect(() => {
     setLoadingMenuCount(prev => ++prev);
     createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get(`/api/product_type?per_page=10&is_active=true`, {withCredentials: true})
+    .get(`/api/product_type?per_page=10&match_col=is_active&match_key=true`, {withCredentials: true})
     .then(response => {
       if (response.data.error_code == 200) {
         setProductTypes(response.data.payload);

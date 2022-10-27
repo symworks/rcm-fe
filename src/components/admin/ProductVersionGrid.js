@@ -2,11 +2,11 @@ import "gridjs/dist/theme/mermaid.css";
 import { Grid, _ } from "gridjs-react";
 import React from "react";
 import { REACT_APP_PUBLIC_BACKEND_URL } from "../../constant/constant";
-import ProductModal from "./ProductModal";
+import ProductVersionModal from "./ProductVersionModal";
 import viVN from "../../locales/gridjs/viVN";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-function ProductGrid() {
+function ProductVersionGrid() {
   const modalRef = React.useRef(undefined);
   const [forceRenderState, setForceRenderState] = React.useState(false);
 
@@ -16,7 +16,7 @@ function ProductGrid() {
 
   return (
     <div>
-      <ProductModal ref={modalRef} handleAddFinal={handleFinal} handleUpdateFinal={handleFinal} handleDeleteFinal={handleFinal}/>
+      <ProductVersionModal ref={modalRef} handleAddFinal={handleFinal} handleUpdateFinal={handleFinal} handleDeleteFinal={handleFinal}/>
       <div className="d-flex justify-content-start mb-2">
         <button className="btn btn-outline-info mr-2" onClick={() => {modalRef?.current && modalRef.current.handleAdd();}}>
           <span className="fa fa-plus"></span> Thêm
@@ -25,14 +25,21 @@ function ProductGrid() {
       <Grid
         columns={[
           "Id",
-          "Tên sản phẩm",
+          "Loại sản phẩm",
+          "Tên dòng sản phẩm",
+          "Giá gốc",
+          "Giá chính thức",
+          "Trong kho",
+          "Đã bán",
+          "Đang giao",
           {
             name: "Thao tác",
-            sort: false
+            sort: false,
+            width: "105px",
           },
         ]}
         server={{
-          url: `${REACT_APP_PUBLIC_BACKEND_URL}/api/product`,
+          url: `${REACT_APP_PUBLIC_BACKEND_URL}/api/product_version`,
           data: (opts) => {
             return new Promise((resolve, reject) => {
               const xhttp = new XMLHttpRequest();
@@ -43,9 +50,15 @@ function ProductGrid() {
                     const resp = JSON.parse(this.response);
 
                     resolve({
-                      data: resp.payload.data.map(product => [
-                        product.id,
-                        product.name,
+                      data: resp.payload.data.map(productVersion => [
+                        productVersion.id,
+                        productVersion.product_type_name,
+                        productVersion.name,
+                        productVersion.origin_price,
+                        productVersion.official_price,
+                        productVersion.instock_qty,
+                        productVersion.sold_qty,
+                        productVersion.busy_qty,
                         _(
                           <div className="d-flex justify-content-start">
                             <OverlayTrigger
@@ -56,7 +69,18 @@ function ProductGrid() {
                                 </Tooltip>
                               }
                             >
-                              <button className="btn btn-outline-info mr-2" onClick={() => {modalRef?.current && modalRef.current.handleEdit(product);}}><span className="icon icon-pencil"/></button>
+                              <button className="btn btn-outline-info btn-sm mr-2" onClick={() => {modalRef?.current && modalRef.current.handleEdit(productVersion);}}><span className="icon icon-pencil"/></button>
+                            </OverlayTrigger>
+
+                            <OverlayTrigger
+                              placement="bottom"
+                              overlay={
+                                <Tooltip>
+                                  Hình ảnh
+                                </Tooltip>
+                              }
+                            >
+                              <button className="btn btn-outline-info btn-sm mr-2" onClick={() => {}}><span className="icon icon-film"/></button>
                             </OverlayTrigger>
 
                             <OverlayTrigger
@@ -67,7 +91,7 @@ function ProductGrid() {
                                 </Tooltip>
                               }
                             >
-                              <button className="btn btn-outline-danger" onClick={() => {modalRef?.current && modalRef.current.handleDelete(product);}}><span className="fa fa-trash-o"/></button>
+                              <button className="btn btn-outline-danger btn-sm" onClick={() => {modalRef?.current && modalRef.current.handleDelete(productVersion);}}><span className="fa fa-trash-o"/></button>
                             </OverlayTrigger>
                           </div>
                         )            
@@ -106,7 +130,7 @@ function ProductGrid() {
 
               const col = columns[0];
               const dir = col.direction === 1 ? 'asc' : 'desc';
-              let colName = ['id', 'name'][col.index];
+              let colName = ['id', 'product_type_name', 'name', 'origin_price', 'official_price', 'instock_qty', 'sold_qty', 'busy_qty'][col.index];
 
               return `${prev}`.includes('?') ? `${prev}&order_col=${colName}&order_key=${dir}` : `${prev}?order_col=${colName}&order_key=${dir}`
             }
@@ -117,4 +141,4 @@ function ProductGrid() {
   );
 }
 
-export default ProductGrid;
+export default ProductVersionGrid;

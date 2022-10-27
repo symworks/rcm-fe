@@ -71,59 +71,59 @@ const ProductList = () => {
   }
 
   const handlePriceDesc = () => {
-    setIsLoading(true);
-    const parsed = qs.parse(window.location.search);
-    const forkQs = {
-      ...queryString,
-      price_order: 'desc'
-    }
-    setQueryString(forkQs);
+    // setIsLoading(true);
+    // const parsed = qs.parse(window.location.search);
+    // const forkQs = {
+    //   ...queryString,
+    //   price_order: 'desc'
+    // }
+    // setQueryString(forkQs);
 
-    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get(`/api/product/${parsed.product_type_id}${constructQueryString(forkQs)}`, {withCredentials: true})
-    .then(response => {
-      if (response.data.error_code === 200) {
-        setProducts(response.data?.payload?.data);
-        setPaginateData({
-          ...response.data?.payload,
-          data: undefined,
-        });
-      }
+    // createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    // .get(`/api/product/${parsed.product_type_id}${constructQueryString(forkQs)}`, {withCredentials: true})
+    // .then(response => {
+    //   if (response.data.error_code === 200) {
+    //     setProducts(response.data?.payload?.data);
+    //     setPaginateData({
+    //       ...response.data?.payload,
+    //       data: undefined,
+    //     });
+    //   }
 
-      setIsLoading(false);
-    })
-    .catch(error => {
-      console.error(error);
-      setIsLoading(false);
-    })
+    //   setIsLoading(false);
+    // })
+    // .catch(error => {
+    //   console.error(error);
+    //   setIsLoading(false);
+    // })
   }
 
   const handlePriceAsc = () => {
-    setIsLoading(true);
-    const forkQs = {
-      ...queryString,
-      price_order: 'asc'
-    }
-    setQueryString(forkQs);
+    // setIsLoading(true);
+    // const forkQs = {
+    //   ...queryString,
+    //   price_order: 'asc'
+    // }
+    // setQueryString(forkQs);
 
-    const parsed = qs.parse(window.location.search);
-    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get(`/api/product/${parsed.product_type_id}${constructQueryString(forkQs)}`, {withCredentials: true})
-    .then(response => {
-      if (response.data.error_code === 200) {
-        setProducts(response.data?.payload?.data);
-        setPaginateData({
-          ...response.data?.payload,
-          data: undefined,
-        });
-      }
+    // const parsed = qs.parse(window.location.search);
+    // createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    // .get(`/api/product/${parsed.product_type_id}${constructQueryString(forkQs)}`, {withCredentials: true})
+    // .then(response => {
+    //   if (response.data.error_code === 200) {
+    //     setProducts(response.data?.payload?.data);
+    //     setPaginateData({
+    //       ...response.data?.payload,
+    //       data: undefined,
+    //     });
+    //   }
 
-      setIsLoading(false);
-    })
-    .catch(error => {
-      console.error(error);
-      setIsLoading(false);
-    })
+    //   setIsLoading(false);
+    // })
+    // .catch(error => {
+    //   console.error(error);
+    //   setIsLoading(false);
+    // })
   }
 
   return (

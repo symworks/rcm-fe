@@ -7,6 +7,7 @@ import { NotificationContextTemp } from "../../providers/NotificationProvider";
 import * as yup from "yup";
 import createAxios from "../../util/createAxios";
 import Confirmation from "../Confirmation";
+import ControlledEditor from "../RcmSelect/ControlledEditor";
 
 const ProductModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, handleDeleteFinal, ...rest}, ref) => {
   const [show, setShow] = React.useState(false);
@@ -20,19 +21,24 @@ const ProductModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, handl
   const validationScheme = yup.object().shape({
     name: yup
     .string()
-    .min(1, 'Tên phương thức thanh toán bắt buộc nhập')
-    .max(255, 'Tên phương thức thanh toán có tối đa 255 ký tự'),
+    .min(1, 'Tên sản phẩm bắt buộc nhập')
+    .max(255, 'Tên sản phẩm có tối đa 255 ký tự'),
+    top_features: yup
+    .string(),
     description: yup
-    .string()
-    .max(255, "Mô tả có tối đa 255 ký tự"),
+    .string(),
+    product_info: yup
+    .string(),
   });
 
   const defaultValue = {
     name: '',
+    top_features: '',
     description: '',
+    product_info: '',
   };
 
-  const { register, handleSubmit, reset, formState: {errors} } = useForm({
+  const { register, handleSubmit, reset, formState: {errors}, control } = useForm({
     resolver: yupResolver(validationScheme),
     defaultValue: defaultValue,
   });
@@ -64,12 +70,12 @@ const ProductModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, handl
     if (apiType === "insert") {
       handleFinal = handleAddFinal;
       axiosInstance = axiosInstance
-      .post(`/api/payment_method`, data, {withCredentials: true});
+      .post(`/api/product`, data, {withCredentials: true});
     } else if (apiType === "update") {
       if (data.is_system_role === true) {
         setNotificationState({
           notificationType: "error",
-          dialogText: "Không thể chỉnh sửa phương thức thanh toán",
+          dialogText: "Không thể chỉnh sửa sản phẩm",
           isShow: true,
         });
 
@@ -78,12 +84,12 @@ const ProductModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, handl
 
       handleFinal = handleUpdateFinal;
       axiosInstance = axiosInstance
-      .patch(`/api/payment_method`, data, {withCredentials: true});
+      .patch(`/api/product`, data, {withCredentials: true});
     } else if (apiType === "delete") {
       if (data.is_system_role === true) {
         setNotificationState({
           notificationType: "error",
-          dialogText: "Không thể xóa phương thức thanh toán",
+          dialogText: "Không thể xóa sản phẩm",
           isShow: true,
         });
 
@@ -92,7 +98,7 @@ const ProductModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, handl
 
       handleFinal = handleDeleteFinal;
       axiosInstance = axiosInstance
-      .delete(`/api/payment_method/${data.id}`, {withCredentials: true}); 
+      .delete(`/api/product/${data.id}`, {withCredentials: true}); 
     } else {
       console.error("something went wrong");
       return;
@@ -135,10 +141,10 @@ const ProductModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, handl
     <div>
       <Confirmation
         ref={confirmationRef}
-        title="Xóa phương thức thanh toán"
+        title="Xóa sản phẩm"
         detail={
           <span>
-            Bạn có muốn chắc xóa phương thức thanh toán <span className="font-weight-bold">{deleteData?.name}</span> không?
+            Bạn có muốn chắc xóa sản phẩm <span className="font-weight-bold">{deleteData?.name}</span> không?
           </span>
         }
         handleOnYes={handleOnYesDelete}
@@ -149,11 +155,11 @@ const ProductModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, handl
         onHide={() => {setShow(false);}}
         backdrop="static"
         centered
-        size="lg"
+        size="xl"
       >
         <Modal.Header closeButton>
           <div className="h5 font-weight-bold">
-            Phương thức thanh toán
+            Sản phẩm
           </div>
         </Modal.Header>
         <Modal.Body>
@@ -161,10 +167,11 @@ const ProductModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, handl
             <div className="row">
               <div className="col-12">
                 <div className="form-group">
+                  <label>Tên sản phẩm</label>
                   <input
                     {...register("name")}
                     className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-                    placeholder="Tên phương thức thanh toán"
+                    placeholder="Tên sản phẩm"
                     autoComplete="off"
                   />
                   <div className="invalid-feedback">{errors.name?.message}</div>
@@ -174,13 +181,39 @@ const ProductModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, handl
             <div className="row">
               <div className="col-12">
                 <div className="form-group">
-                  <input
-                    {...register("description")}
-                    className={`form-control ${errors.description ? 'is-invalid' : ''}`}
-                    placeholder="Mô tả"
-                    autoComplete="off"
+                  <label>Tính năng hàng đầu</label>
+                  <ControlledEditor
+                    name="top_features"
+                    placeholder="Tính năng hàng đầu"
+                    control={control}
                   />
-                  <div className="invalid-feedback">{errors.description?.message}</div>
+                  <div className="text-danger"><small>{errors.top_features?.message}</small></div>
+                </div>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-12">
+                <div className="form-group">
+                  <label>Mô tả</label>
+                  <ControlledEditor
+                    name="description"
+                    placeholder="Mô tả"
+                    control={control}
+                  />
+                  <div className="text-danger"><small>{errors.description?.message}</small></div>
+                </div>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-12">
+                <div className="form-group">
+                  <label>Thông tin sản phẩm</label>
+                  <ControlledEditor
+                    name="product_info"
+                    placeholder="Thông tin sản phẩm"
+                    control={control}
+                  />
+                  <div className="text-danger"><small>{errors.product_info?.message}</small></div>
                 </div>
               </div>
             </div>
