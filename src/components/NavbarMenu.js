@@ -40,11 +40,17 @@ class NavbarMenu extends React.Component {
 
   activeMenutabwhenNavigate(activeKey) {
     if (
+      activeKey === "/categoryProductType" ||
+      activeKey === "/categoryRole" ||
+      activeKey === "/categoryProductTag"
+    ) {
+      this.activeMenutabContainer("categoryContainer");
+    } else if (
       activeKey === "/dashboard" ||
       activeKey === "/demographic" ||
       activeKey === "/ioT"
     ) {
-      this.activeMenutabContainer("dashboradContainer");
+      this.activeMenutabContainer("DashboradContainer");
     } else if (
       activeKey === "/appinbox" ||
       activeKey === "/appchat" ||
@@ -534,7 +540,29 @@ class NavbarMenu extends React.Component {
                 >
                     <Nav className="sidebar-nav">
                         <ul className="metismenu">
-                            <li className=""></li>
+                            <li className="" id="categoryContainer">
+                              <a
+                                href="#!"
+                                className="has-arrow"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  this.activeMenutabContainer("categoryContainer");
+                                }}
+                              >
+                                <i className="icon-home"></i> <span>Danh mục</span>
+                              </a>
+                              <ul className="collapse">
+                                <li className={activeKey === "categoryProductType" ? "active" : ""}>
+                                  <Link to="categoryProductType">Loại sản phẩm</Link>
+                                </li>
+                                <li className={activeKey === "categoryRole" ? "active" : ""}>
+                                  <Link to="categoryRole">Chức vụ</Link>
+                                </li>
+                                <li className={activeKey === "categoryProductTag" ? "active" : ""}>
+                                  <Link to="categoryProductTag">Nhãn dán</Link>
+                                </li>
+                              </ul>
+                            </li>
                         </ul>
                     </Nav>
                 </div>
@@ -544,32 +572,26 @@ class NavbarMenu extends React.Component {
                 >
                     <Nav id="left-sidebar-nav" className="sidebar-nav">
                         <ul id="main-menu" className="metismenu">
-                            <li className="" id="dashboradContainer">
+                            <li id="DashboradContainer" className="">
                                 <a
                                     href="#!"
                                     className="has-arrow"
                                     onClick={(e) => {
-                                    e.preventDefault();
-                                    this.activeMenutabContainer("dashboradContainer");
+                                      e.preventDefault();
+                                      this.activeMenutabContainer("DashboradContainer");
                                     }}
                                 >
                                     <i className="icon-home"></i> <span>Dashboard</span>
                                 </a>
                                 <ul className="collapse">
-                                    <li
-                                    className={activeKey === "dashboard" ? "active" : ""}
-                                    >
-                                    <Link to="dashboard">Analytical</Link>
+                                    <li className={activeKey === "dashboard" ? "active" : ""} onClick={() => {}}>
+                                      <Link to="dashboard">Analytical</Link>
                                     </li>
-                                    <li
-                                    className={
-                                        activeKey === "demographic" ? "active" : ""
-                                    }
-                                    >
-                                    <Link to="demographic">Demographic</Link>
+                                    <li className={activeKey === "demographic" ? "active" : ""} onClick={() => {}}>
+                                      <Link to="demographic">Demographic</Link>
                                     </li>
-                                    <li className={activeKey === "ioT" ? "active" : ""}>
-                                    <Link to="ioT">IoT</Link>
+                                    <li className={activeKey === "ioT" ? "active" : ""} onClick={() => {}}>
+                                      <Link to="ioT">IoT</Link>
                                     </li>
                                 </ul>
                             </li>
