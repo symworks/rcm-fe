@@ -73,7 +73,7 @@ const CategoryVnWardModal = React.forwardRef(({handleAddFinal, handleUpdateFinal
     } else if (apiType === "delete") {
       handleFinal = handleDeleteFinal;
       axiosInstance = axiosInstance
-      .delete(`/api/category_vn_district/${data.id}`, {withCredentials: true}); 
+      .delete(`/api/category_vn_district/${data.id}`, {withCredentials: true});
     } else {
       console.error("something went wrong");
       return;
