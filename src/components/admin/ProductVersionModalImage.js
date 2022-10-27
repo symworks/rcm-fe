@@ -55,7 +55,7 @@ const ProductVersionModalImage = React.forwardRef(({handleAddFinal = undefined, 
     } else if (apiType === "delete") {
       handleFinal = handleDeleteFinal;
       axiosInstance = axiosInstance
-      .delete(`/api/product_version/${data.id}`, {withCredentials: true}); 
+      .delete(`/api/product_version/${data.id}`, {withCredentials: true});
     } else {
       console.error("something went wrong");
       return;

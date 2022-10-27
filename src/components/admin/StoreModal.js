@@ -148,7 +148,7 @@ const StoreModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, handleD
 
       handleFinal = handleDeleteFinal;
       axiosInstance = axiosInstance
-      .delete(`/api/store/${data.id}`, {withCredentials: true}); 
+      .delete(`/api/store/${data.id}`, {withCredentials: true});
     } else {
       console.error("something went wrong");
       return;

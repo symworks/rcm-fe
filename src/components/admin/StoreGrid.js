@@ -79,7 +79,7 @@ function StoreGrid() {
                               <button className="btn btn-outline-danger" onClick={() => {modalRef?.current && modalRef.current.handleDelete(store);}}><span className="fa fa-trash-o"/></button>
                             </OverlayTrigger>
                           </div>
-                        )            
+                        )
                       ]),
                       total: resp.payload.total,
                     });
