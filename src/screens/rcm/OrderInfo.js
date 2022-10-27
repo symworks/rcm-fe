@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import SingleSelect from '../../components/RcmSelect/SingleSelect';
 import { useHistory } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
+import createAxios from '../../util/createAxios';
 
 const OrderInfo = () => {
   const [loadingPageCount, setLoadingPageCount] = React.useState(0);
@@ -125,23 +126,18 @@ const OrderInfo = () => {
     is_call_other: false,
   }
 
-  const {register, handleSubmit, reset, formState: {errors}, control} = useForm({
+  const {register, handleSubmit, formState: {errors}, control} = useForm({
     resolver: yupResolver(validationScheme),
     defaultValues: defaultValue,
   });
 
   React.useEffect(() => {
     setLoadingPageCount(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/category_vn_province/select`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
-        setCategoryProvinceOptions(prev => [...prev, ...data.payload]);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get('/api/category_vn_province/select', {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
+        setCategoryProvinceOptions(prev => [...prev, ...response.data.payload]);
       }
 
       setLoadingPageCount(prev => --prev);
@@ -153,16 +149,11 @@ const OrderInfo = () => {
   }, []);
 
   const handleProvinceChange = (...args) => {
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/category_vn_district/select?${args.length !== 0 ? 'province_id=' + args[0] : ''}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
-        setCategoryDistrictOptions(data.payload);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/category_vn_district/select?${args.length !== 0 ? 'province_id=' + args[0] : ''}`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
+        setCategoryDistrictOptions(response.data.payload);
       } else {
         setCategoryDistrictOptions([]);
       }
@@ -175,16 +166,11 @@ const OrderInfo = () => {
   }
 
   const handleDistrictChange = (...args) => {
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/store/select?${args.length > 0 ? 'district_id=' + args[0] : ''}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
-        setStoresOptions(data.payload);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/store/select?${args.length > 0 ? 'district_id=' + args[0] : ''}`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
+        setStoresOptions(response.data.payload);
       }
     })
     .catch(error => {
@@ -213,33 +199,21 @@ const OrderInfo = () => {
     }
 
     setLoadingSubmitCountState(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_order`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(submitData),
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {        
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .post('/api/product_order', submitData, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {        
         const productsStorage = JSON.parse(localStorage.getItem('products'));
         productsStorage.forEach(productItem => {
           setLoadingSubmitCountState(prev => ++prev);
-          fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_order_detail`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              order_qty: productItem.qty,
-              product_order_id: data.payload.insertedId,
-              product_id: productItem.productVersion.id,
-            })
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.error_code === 200) {
+          createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+          .post(`/api/product_order_detail`, {
+            order_qty: productItem.qty,
+            product_order_id: response.data.payload.insertedId,
+            product_id: productItem.productVersion.id,
+          }, {withCredentials: true})
+          .then(response => {
+            if (response.data.error_code === 200) {
               // Do nothing
             }
 
@@ -251,7 +225,7 @@ const OrderInfo = () => {
           });
         });
 
-        history.push(`/rcm/payment_info?product_order_id=${data.payload.insertedId}`);
+        history.push(`/rcm/payment_info?product_order_id=${response.data.payload.insertedId}`);
       }
 
       setLoadingSubmitCountState(prev => --prev);

@@ -4,6 +4,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Card, Image } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
+import createAxios from '../../util/createAxios';
 
 const Cart = () => {
   const [loadingProductCount, setLoadingProductCount] = React.useState(0);
@@ -37,16 +38,11 @@ const Cart = () => {
 
     queryParams = queryParams.slice(1, queryParams.length);
     setLoadingProductCount(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_version?${queryParams}&use_paginate=false`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code == 200) {
-        data.payload.forEach((payloadItem) => {
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/product_version?${queryParams}&use_paginate=false`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code == 200) {
+        response.data.payload.forEach((payloadItem) => {
           var currentProductVersion = finalProducts.find(productVersionItem => productVersionItem.productVersion.id == payloadItem.id);
           currentProductVersion && (currentProductVersion.productPayload = payloadItem);
         })
@@ -58,7 +54,6 @@ const Cart = () => {
     })
     .catch(error => {
       console.error(error);
-  
       setLoadingProductCount(prev => --prev);
     });
 

@@ -13,6 +13,8 @@ import "../node_modules/bootstrap/scss/bootstrap.scss";
 import "./assets/assets/scss/main.scss";
 import "./assets/assets/scss/color_skins.scss";
 import "../node_modules/font-awesome/scss/font-awesome.scss";
+import { AuthContextProvider } from "./providers/AuthContextProvider";
+import { NotificationContextProvider } from "./providers/NotificationProvider";
 import Notification from "./components/Notification";
 
 const store = createStore(reducers, composeWithDevTools(
@@ -22,8 +24,12 @@ const store = createStore(reducers, composeWithDevTools(
 ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
-      <Notification/>
-      <App />
+      <AuthContextProvider>
+        <NotificationContextProvider>
+          <Notification/>
+          <App />
+        </NotificationContextProvider>
+      </AuthContextProvider> 
     </BrowserRouter>
   </Provider>,
   document.getElementById("root")

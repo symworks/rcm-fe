@@ -13,6 +13,7 @@ import moment from "moment";
 import EvaluateModal from './EvaluateModal';
 import {useHistory} from 'react-router-dom';
 import _ from 'lodash';
+import createAxios from '../../util/createAxios';
 
 const qs = require('query-string');
 
@@ -36,18 +37,13 @@ const ProductDetail = () => {
 
   React.useEffect(() => {
     setLoadingProductCount(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_version?product_id=${parsed.product_id}&use_paginate=false&qty_critical=instock`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
-        setProductVersions(data.payload);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/product_version?product_id=${parsed.product_id}&use_paginate=false&qty_critical=instock`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
+        setProductVersions(response.data.payload);
 
-        const idx = data.payload?.findIndex(item => item.id == parsed.id)
+        const idx = response.data.payload?.findIndex(item => item.id == parsed.id)
         idx > -1 && setActivateProductVersionIdx(idx);
       }
 
@@ -59,16 +55,11 @@ const ProductDetail = () => {
     });
 
     setLoadingProductCount(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_image/thumbnail?product_id=${parsed.id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
-        setProductImages(data.payload);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/product_image/thumbnail?product_id=${parsed.product_id}`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
+        setProductImages(response.data.payload);
       }
 
       setLoadingProductCount(prev => --prev);
@@ -79,18 +70,13 @@ const ProductDetail = () => {
     });
 
     setLoadMoreCount(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_evaluate/with_created_user?per_page=15&product_id=${parsed.id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
-        setProductEvaluates(data?.payload?.data);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/product_evaluate/with_created_user?per_page=15&product_id=${parsed.id}`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
+        setProductEvaluates(response.data?.payload?.data);
         setProductEvaluatesPaginate({
-          ...data?.payload,
+          ...response.data?.payload,
           data: undefined,
         });
       }
@@ -110,16 +96,11 @@ const ProductDetail = () => {
     }
 
     setLoadingProductCount(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product?id=${productVersions[activeProductVersionIdx].product_id}&use_paginate=false`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200 && data.payload.length > 0) {
-        setProduct(data.payload[0]);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/product?id=${productVersions[activeProductVersionIdx].product_id}&use_paginate=false`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200 && response.data.payload.length > 0) {
+        setProduct(response.data.payload[0]);
       }
 
       setLoadingProductCount(prev => --prev);
@@ -130,16 +111,11 @@ const ProductDetail = () => {
     });
 
     setLoadingProductCount(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_color_qty?use_paginate=false&product_version_id=${productVersions[activeProductVersionIdx].id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
-        setProductColorQties(data?.payload);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/product_color_qty?use_paginate=false&product_version_id=${productVersions[activeProductVersionIdx].id}`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
+        setProductColorQties(response.data?.payload);
       }
 
       setLoadingProductCount(prev => --prev);
@@ -158,21 +134,16 @@ const ProductDetail = () => {
 
   const handleLoadMore = () => {
     setLoadMoreCount(prev => ++prev);
-    fetch(`${productEvaluatesPaginate?.next_page_url}&per_page=15&product_id=${parsed.id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`${productEvaluatesPaginate?.next_page_url}&per_page=15&product_id=${parsed.id}`.replace(REACT_APP_PUBLIC_BACKEND_URL, ''), {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
         setProductEvaluates(prev => [
           ...prev,
-          ...data?.payload?.data,
+          ...response.data.payload.data,
         ]);
         setProductEvaluatesPaginate({
-          ...data?.payload,
+          ...response.data.payload,
           data: undefined,
         })
       }

@@ -11,6 +11,7 @@ import "react-image-gallery/styles/scss/image-gallery.scss";
 import {
   REACT_APP_PUBLIC_BACKEND_URL,
 } from "../../constant/constant";
+import createAxios from "../../util/createAxios";
 
 const CategoryPopover = ({productTypes, adsCampaigns, isLoading}) => {
   const [loadingModalData, setLoadingModalData] = React.useState(true);
@@ -24,16 +25,11 @@ const CategoryPopover = ({productTypes, adsCampaigns, isLoading}) => {
   const handleShow = (productId) => {
     setShow(true);
     setLoadingModalData(true);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/ui/rcm/category_menu/${productId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
-        setModalData(data.payload);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/ui/rcm/category_menu/${productId}`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
+        setModalData(response.data.payload);
       }
       setLoadingModalData(false);
     })

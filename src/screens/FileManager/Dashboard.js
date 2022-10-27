@@ -11,64 +11,66 @@ import {
   areaChartFileReport,
 } from "../../Data/FileManagerData";
 
-class FileManagerDashboard extends React.Component {
-  componentDidMount() {
+const FileManagerDashboard = (props) => {
+  const { isLoggedin } = props;
+
+  React.useEffect(() => {
     window.scrollTo(0, 0);
-  }
-  render() {
-    return (
-      <div
-        style={{ flex: 1 }}
-        onClick={() => {
-          document.body.classList.remove("offcanvas-active");
-        }}
-      >
-        <div>
-          <div className="container-fluid">
-            <PageHeader
-              HeaderText="Dashboard"
-              Breadcrumb={[
-                { name: "File Manager", navigate: "" },
-                { name: "File Manager", navigate: "" },
-              ]}
-            />
-            <div className="row clearfix">
-              {fileFolderCardData.map((data, index) => {
-                return <FileFolderCard key={index} HeaderText={data.Header} />;
+  }, [])
+
+  return (
+    <div
+      style={{ flex: 1 }}
+      onClick={() => {
+        document.body.classList.remove("offcanvas-active");
+      }}
+    >
+      <div>
+        <div className="container-fluid">
+          <PageHeader
+            HeaderText="Dashboard"
+            Breadcrumb={[
+              { name: "File Manager", navigate: "" },
+              { name: "File Manager", navigate: "" },
+            ]}
+          />
+          <div className="row clearfix">
+            {fileFolderCardData.map((data, index) => {
+              return <FileFolderCard key={index} HeaderText={data.Header} />;
+            })}
+          </div>
+          <div className="row clearfix">
+            <div className="col-lg-3 col-md-5 col-sm-12">
+              <FileStorageCard TotalSize="1TB" UsedSize={45} />
+              {fileStorageStatusCardData.map((data, index) => {
+                return (
+                  <FileStorageStatusCard
+                    key={index + "sidjpidj"}
+                    TotalSize={data.TotalSize}
+                    UsedSize={data.UsedSize}
+                    Type={data.Type}
+                    UsedPer={data.UsedPer}
+                    ProgressBarClass={`${data.ProgressBarClass}`}
+                  />
+                );
               })}
             </div>
-            <div className="row clearfix">
-              <div className="col-lg-3 col-md-5 col-sm-12">
-                <FileStorageCard TotalSize="1TB" UsedSize={45} />
-                {fileStorageStatusCardData.map((data, index) => {
-                  return (
-                    <FileStorageStatusCard
-                      key={index + "sidjpidj"}
-                      TotalSize={data.TotalSize}
-                      UsedSize={data.UsedSize}
-                      Type={data.Type}
-                      UsedPer={data.UsedPer}
-                      ProgressBarClass={`${data.ProgressBarClass}`}
-                    />
-                  );
-                })}
-              </div>
-              <div className="col-lg-9 col-md-7 col-sm-12">
-                <LineChartCard
-                  HeaderText="File Reports"
-                  ChartOption={areaChartFileReport}
-                />
-              </div>
+            <div className="col-lg-9 col-md-7 col-sm-12">
+              <LineChartCard
+                HeaderText="File Reports"
+                ChartOption={areaChartFileReport}
+              />
             </div>
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
-const mapStateToProps = ({ ioTReducer }) => ({
-  isSecuritySystem: ioTReducer.isSecuritySystem,
+const mapStateToProps = ({ }) => ({
 });
 
-export default connect(mapStateToProps, {})(FileManagerDashboard);
+export default connect(mapStateToProps, {
+
+})(FileManagerDashboard);

@@ -7,8 +7,8 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { onSetNotificationInfo } from "../../actions";
+import createAxios from '../../util/createAxios';
+import { NotificationContextTemp } from '../../providers/NotificationProvider';
 
 const qs = require('query-string');
 
@@ -22,21 +22,18 @@ const PaymentInfo = (props) => {
   const [loadingSubmitCountState, setLoadingSubmitCountState] = React.useState(0);
   const [selectedPaymentMethodIndexState, setSelectedPaymentMethodIndexState] = React.useState(0);
 
+  const { setNotificationState } = React.useContext(NotificationContextTemp);
+
   const history = useHistory();
   const parsed = qs.parse(window.location.search);
 
   React.useEffect(() => {
     setLoadingProductOrderDetailCountState(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_order?use_paginate=false&id=${parsed.product_order_id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200 && data.payload[0]) {
-        setProductOrderDetailState(data.payload[0]);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/product_order?use_paginate=false&id=${parsed.product_order_id}`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200 && response.data.payload[0]) {
+        setProductOrderDetailState(response.data.payload[0]);
       }
 
       setLoadingProductOrderDetailCountState(prev => --prev);
@@ -47,16 +44,11 @@ const PaymentInfo = (props) => {
     });
 
     setLoadingProductOrderDetailCountState(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/payment_method?use_paginate=false}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
-        setPaymentMethods(data.payload);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/payment_method?use_paginate=false`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
+        setPaymentMethods(response.data.payload);
       }
 
       setLoadingProductOrderDetailCountState(prev => --prev);
@@ -76,31 +68,29 @@ const PaymentInfo = (props) => {
       id: parseInt(parsed.product_order_id),
     };
     setLoadingSubmitCountState(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_order/select_method`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(submitData),
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .patch(`/api/product_order/select_method`, submitData, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
         if (submitData.payment_method_id == 1) { // Nhận hàng trực tiếp
           history.push('/rcm');
-          props.onSetNotificationInfo({
+          setNotificationState({
             notificationType: "success",
             dialogText: "Đơn hàng đã được đặt thành công, chúng tôi sẽ gửi email chi tiết về đơn đặt hàng cho bạn.",
             isShow: true,
           });
+          localStorage.removeItem('products');
+          localStorage.removeItem('price');
+
+          // TODO: add invoice number to localStorage.
         } else {
           // TODO:
           // Đến trang thanh toán
         }
       } else {
-        props.onSetNotificationInfo({
+        setNotificationState({
           notificationType: "error",
-          dialogText: data.msg,
+          dialogText: response.data.msg,
           isShow: true,
         });
       }
@@ -248,13 +238,4 @@ const steps = [
   }
 ]
 
-const mapStateToProps = ({ notificationReducer }) => ({
-  notificationType: notificationReducer.notificationType,
-  position: notificationReducer.position,
-  dialogText: notificationReducer.dialogText,
-  isShow: notificationReducer.isShow,
-});
-
-export default connect(mapStateToProps, {
-  onSetNotificationInfo,
-})(PaymentInfo);
+export default PaymentInfo;

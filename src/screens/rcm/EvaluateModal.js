@@ -7,6 +7,7 @@ import { REGEX_EMAIL } from '../../constant/constant';
 import { yupResolver } from '@hookform/resolvers/yup';
 import StarRatings from 'react-star-ratings';
 import { REACT_APP_PUBLIC_BACKEND_URL } from '../../constant/constant';
+import createAxios from '../../util/createAxios';
 
 const EvaluateModal = ({loadingPage, productId, handleAfterSubmitEvaluateModal, ...rest}) => {
   const [show, setShow] = React.useState(false);
@@ -23,25 +24,19 @@ const EvaluateModal = ({loadingPage, productId, handleAfterSubmitEvaluateModal, 
     content: yup.string(),
   });
 
-  const { register, handleSubmit, reset, formState: {errors} } = useForm({
+  const { register, handleSubmit, formState: {errors} } = useForm({
     resolver: yupResolver(validationScheme),
   });
 
   const onSubmit = data => {
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_evaluate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...data,
-        "product_id": Number(productId),
-        "rate_value": rateValue,
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .post('/api/product_evaluate', {
+      ...data,
+      "product_id": Number(productId),
+      "rate_value": rateValue,
+    }, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
         if (handleAfterSubmitEvaluateModal) {
           handleAfterSubmitEvaluateModal();
         }

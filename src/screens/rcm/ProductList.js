@@ -7,6 +7,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import {
   REACT_APP_PUBLIC_BACKEND_URL,
 } from "../../constant/constant";
+import createAxios from '../../util/createAxios';
 
 const qs = require('query-string');
 
@@ -21,11 +22,7 @@ const ProductList = () => {
   const constructQueryString = (need) => {
     var result = "";
     for (const key in need) {
-      if (result.length > 0) {
-        result += "&" + key + "=" + need[key];
-      } else {
-        result += "?" + key + "=" + need[key];
-      }
+      result += "&" + key + "=" + need[key];
     }
 
     return result;
@@ -33,18 +30,13 @@ const ProductList = () => {
 
   React.useEffect(() => {
     const parsed = qs.parse(window.location.search);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_version?product_type_id=${parsed.product_type_id}${constructQueryString({per_page: 20})}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
-        setProducts(data?.payload?.data);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/product_version?product_type_id=${parsed.product_type_id}${constructQueryString({per_page: 20})}`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
+        setProducts(response.data?.payload?.data);
         setPaginateData({
-          ...data?.payload,
+          ...response.data?.payload,
           data: undefined,
         });
       }
@@ -59,18 +51,13 @@ const ProductList = () => {
 
   const handleLoadMore = () => {
     setIsLoadMore(true);
-    fetch(`${paginateData?.next_page_url}&${constructQueryString(queryString).replace('?', '')}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
-        setProducts(prev => ([...prev, ...data?.payload?.data]));
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`${paginateData?.next_page_url}&${constructQueryString(queryString).replace('?', '')}`.replace(REACT_APP_PUBLIC_BACKEND_URL, ''), {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
+        setProducts(prev => ([...prev, ...response.data?.payload?.data]));
         setPaginateData({
-          ...data?.payload,
+          ...response.data?.payload,
           data: undefined,
         });
       } 
@@ -92,18 +79,13 @@ const ProductList = () => {
     }
     setQueryString(forkQs);
 
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product/${parsed.product_type_id}${constructQueryString(forkQs)}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
-        setProducts(data?.payload?.data);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/product/${parsed.product_type_id}${constructQueryString(forkQs)}`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
+        setProducts(response.data?.payload?.data);
         setPaginateData({
-          ...data?.payload,
+          ...response.data?.payload,
           data: undefined,
         });
       }
@@ -125,18 +107,13 @@ const ProductList = () => {
     setQueryString(forkQs);
 
     const parsed = qs.parse(window.location.search);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product/${parsed.product_type_id}${constructQueryString(forkQs)}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
-        setProducts(data?.payload?.data);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/product/${parsed.product_type_id}${constructQueryString(forkQs)}`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code === 200) {
+        setProducts(response.data?.payload?.data);
         setPaginateData({
-          ...data?.payload,
+          ...response.data?.payload,
           data: undefined,
         });
       }

@@ -13,6 +13,7 @@ import {
 import {
   REACT_APP_PUBLIC_BACKEND_URL,
 } from "../constant/constant";
+import createAxios from '../util/createAxios';
 
 const Rcm = () => {
   const [productTypes, setProductTypes] = React.useState(undefined);
@@ -33,16 +34,11 @@ const Rcm = () => {
 
   React.useEffect(() => {
     setLoadingMenuCount(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_type?per_page=10&is_active=true`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code == 200) {
-        setProductTypes(data?.payload);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/product_type?per_page=10&is_active=true`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code == 200) {
+        setProductTypes(response.data.payload);
       }
 
       setLoadingMenuCount(prev => --prev);
@@ -53,16 +49,11 @@ const Rcm = () => {
     });
 
     setLoadingMenuCount(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/ads_campaign?per_page=7&is_active=true`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code == 200) {
-        setAdsCampaigns(data?.payload);
+    createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+    .get(`/api/ads_campaign?per_page=7&is_active=true`, {withCredentials: true})
+    .then(response => {
+      if (response.data.error_code == 200) {
+        setAdsCampaigns(response.data.payload);
       }
 
       setLoadingMenuCount(prev => --prev);
@@ -76,18 +67,13 @@ const Rcm = () => {
   React.useEffect(() => {
     productTypes?.data && productTypes.data.forEach(productType => {
       setLoadingProductsCount(prev => ++prev);
-      fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_version?per_page=15&product_type_id=${productType.id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.error_code == 200) {
+      createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+      .get(`/api/product_version?per_page=15&product_type_id=${productType.id}`, {withCredentials: true})
+      .then(response => {
+        if (response.data.error_code == 200) {
           setProducts(prev => ([
             ...prev,
-            data.payload,
+            response.data.payload,
           ]))
         }
 
