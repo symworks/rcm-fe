@@ -93,7 +93,7 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
 
       handleFinal = handleDeleteFinal;
       axiosInstance = axiosInstance
-      .delete(`/api/category_role/${data.id}`, {withCredentials: true}); 
+      .delete(`/api/category_role/${data.id}`, {withCredentials: true});
     } else {
       console.error("something went wrong");
       return;

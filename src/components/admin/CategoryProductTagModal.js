@@ -73,7 +73,7 @@ const CategoryProductTagModal = React.forwardRef(({handleAddFinal, handleUpdateF
     } else if (apiType === "delete") {
       handleFinal = handleDeleteFinal;
       axiosInstance = axiosInstance
-      .delete(`/api/category_product_tag/${data.id}`, {withCredentials: true}); 
+      .delete(`/api/category_product_tag/${data.id}`, {withCredentials: true});
     } else {
       console.error("something went wrong");
       return;

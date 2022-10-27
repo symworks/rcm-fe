@@ -24,7 +24,7 @@ const CategoryVnDistrictBar = ({handleAdd, value, setValue}) => {
     <div className="d-flex justify-content-start mb-2">
       <button
         className="btn btn-outline-info mr-2"
-        onClick={handleAdd}  
+        onClick={handleAdd}
       >
         <span className="fa fa-plus"></span> Thêm
       </button>
