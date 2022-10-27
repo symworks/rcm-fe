@@ -92,7 +92,7 @@ const PaymentMethodModal = React.forwardRef(({handleAddFinal, handleUpdateFinal,
 
       handleFinal = handleDeleteFinal;
       axiosInstance = axiosInstance
-      .delete(`/api/payment_method/${data.id}`, {withCredentials: true}); 
+      .delete(`/api/payment_method/${data.id}`, {withCredentials: true});
     } else {
       console.error("something went wrong");
       return;

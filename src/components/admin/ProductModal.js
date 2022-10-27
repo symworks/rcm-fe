@@ -98,7 +98,7 @@ const ProductModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, handl
 
       handleFinal = handleDeleteFinal;
       axiosInstance = axiosInstance
-      .delete(`/api/product/${data.id}`, {withCredentials: true}); 
+      .delete(`/api/product/${data.id}`, {withCredentials: true});
     } else {
       console.error("something went wrong");
       return;

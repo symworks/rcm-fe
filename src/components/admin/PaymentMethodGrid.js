@@ -82,7 +82,7 @@ function PaymentMethodGrid() {
                               <button className="btn btn-outline-danger" onClick={() => {modalRef?.current && modalRef.current.handleDelete(paymentMethod);}}><span className="fa fa-trash-o"/></button>
                             </OverlayTrigger>
                           </div>
-                        )            
+                        )
                       ]),
                       total: resp.payload.total,
                     });
