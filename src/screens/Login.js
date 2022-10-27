@@ -87,7 +87,7 @@ class Login extends React.Component {
                       </div>
                       <a
                         className="btn btn-primary btn-lg btn-block"
-                        href="dashboard"
+                        href="rcm"
                       >Login</a>
                       <div className="bottom">
                         <span className="helper-text m-b-10">

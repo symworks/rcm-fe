@@ -276,6 +276,20 @@ body {
                 }
             }
         }
+        #rcm-content{
+            background: $theme-dark;
+            .card{
+                background: $theme-dark2;
+                .header{
+                    h2{
+                        color: $theme-darkfont2;
+                    }
+                }
+                .body{
+                    color: $theme-darkfont;
+                }
+            }
+        }
 		.nav-tabs{
             > li > a {
 				&.active,

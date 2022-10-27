@@ -25,22 +25,19 @@ import Avatar2 from "../assets/images/xs/avatar2.jpg";
 import Avatar1 from "../assets/images/xs/avatar1.jpg";
 import Avatar3 from "../assets/images/xs/avatar3.jpg";
 
-class NavbarMenu extends React.Component {
+class AuthNavbarMenu extends React.Component {
   state = {
     linkupdate: false,
   };
   componentDidMount() {
     this.props.tostMessageLoad(true);
-    // var res = window.location.pathname;
-    // res = res.split("/");
-    // res = res.length > 4 ? res[4] : "/";
     const { activeKey } = this.props;
     this.activeMenutabwhenNavigate("/" + activeKey);
   }
 
   activeMenutabwhenNavigate(activeKey) {
     if (
-      activeKey === "/categoryProductType" ||
+      activeKey === "/CategoryProductType" ||
       activeKey === "/categoryRole" ||
       activeKey === "/categoryProductTag"
     ) {
@@ -552,8 +549,8 @@ class NavbarMenu extends React.Component {
                                 <i className="icon-home"></i> <span>Danh mục</span>
                               </a>
                               <ul className="collapse">
-                                <li className={activeKey === "categoryProductType" ? "active" : ""}>
-                                  <Link to="categoryProductType">Loại sản phẩm</Link>
+                                <li className={activeKey === "CategoryProductType" ? "active" : ""}>
+                                  <Link to="CategoryProductType">Loại sản phẩm</Link>
                                 </li>
                                 <li className={activeKey === "categoryRole" ? "active" : ""}>
                                   <Link to="categoryRole">Chức vụ</Link>
@@ -1554,7 +1551,7 @@ class NavbarMenu extends React.Component {
   }
 }
 
-NavbarMenu.propTypes = {
+AuthNavbarMenu.propTypes = {
   addClassactive: PropTypes.array.isRequired,
   addClassactiveChild: PropTypes.array.isRequired,
   addClassactiveChildApp: PropTypes.array.isRequired,
@@ -1632,4 +1629,4 @@ export default connect(mapStateToProps, {
   onPressMenuProfileDropdown,
   onPressSideMenuTab,
   tostMessageLoad,
-})(NavbarMenu);
+})(AuthNavbarMenu);

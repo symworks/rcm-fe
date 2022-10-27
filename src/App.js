@@ -5,7 +5,7 @@ import Login from "./screens/Login";
 import dashboard from "./screens/Dashbord/Dashbord";
 import demographic from "./screens/Dashbord/Demographic";
 import ioT from "./screens/Dashbord/IoT";
-import NavbarMenu from "./components/NavbarMenu";
+import AuthNavbarMenu from "./components/AuthNavbarMenu";
 import appInbox from "./screens/App/Inbox";
 import appChat from "./screens/App/Chat";
 import appCalendar from "./screens/App/Calendar";
@@ -60,6 +60,9 @@ import basicelements from "./screens/Forms/BasicElements";
 import tablenormal from "./screens/Tables/TableNormal";
 import echart from "./screens/Charts/Echart";
 import leafletmap from "./screens/Maps/GoogleMaps";
+
+import rcm from "./screens/Rcm";
+import PublicNavbarMenu from "./components/PublicNavbarMenu";
 
 window.__DEV__ = true;
 
@@ -148,8 +151,20 @@ class App extends React.Component {
               />
             </Switch>
         ) : (
+          (activeKey1 === "rcm") ? (
+            <div id="rcm-content">
+              <PublicNavbarMenu/>
+              <Switch>
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/rcm`}
+                  component={rcm}
+                />
+              </Switch>
+            </div>
+          ) : (
           <>
-              <NavbarMenu history={this.props.history} activeKey={activeKey1} />
+              <AuthNavbarMenu history={this.props.history} activeKey={activeKey1} />
               <div id="main-content">
                 <Switch>
                   <Route
@@ -400,7 +415,7 @@ class App extends React.Component {
                 </Switch>
               </div>
           </>
-        )}
+        ))}
       </div>
     );
   }

@@ -238,8 +238,8 @@ class CategoryProductType extends React.Component {
     }
 }
 
-const mapStateToProps = ({categoryProductTypeReducer}) => ({
-    isSecuritySystem: categoryProductTypeReducer.isSecuritySystem,
+const mapStateToProps = ({CategoryProductTypeReducer}) => ({
+    isSecuritySystem: CategoryProductTypeReducer.isSecuritySystem,
 });
 
 export default connect(mapStateToProps, {})(CategoryProductType);
