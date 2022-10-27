@@ -20,55 +20,23 @@ const ProductDetail = () => {
   const parsed = qs.parse(window.location.search);
 
   const [product, setProduct] = React.useState(undefined);
-  const [images, setImages] = React.useState([]);
   const [productVersions, setProductVersions] = React.useState([]);
   const [productColorQties, setProductColorQties] = React.useState(undefined);
   const [productEvaluates, setProductEvaluates] = React.useState([]);
+  const history = useHistory();
 
   const [productEvaluatesPaginate, setProductEvaluatesPaginate] = React.useState(undefined);
-  const [activeProductVersion, setActiveProductVersion] = React.useState(0);
+  const [activeProductVersionIdx, setActivateProductVersionIdx] = React.useState(-1);
   const [activeProductColorQty, setActiveProductColorQty] = React.useState(0);
 
-  const [loadingProductCount, setLoadingProductCount] = React.useState(0);
-  const [loadingProductVersionsCount, setLoadingProductVersionsCount] = React.useState(0);
-  const [loadingProductColorQtiesCount, setLoadingProductColorQtiesCount] = React.useState(0);
-  const [loadingEvaluationCount, setLoadingEvaluationCount] = React.useState(0);
   const [loadMoreCount, setLoadMoreCount] = React.useState(0);
+  const [loadingProductCount, setLoadingProductCount] = React.useState(0);
+
+  const [productImages, setProductImages] = React.useState([]);
 
   React.useEffect(() => {
     setLoadingProductCount(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product/product_id/${parsed.id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200 && data?.payload.length === 1) {
-        setProduct(data.payload[0]);
-        for (let i = 1; i < 6; ++i) {
-          if (data?.payload[0][`image_${i}`] !== undefined) {
-            setImages((prev) => ([
-              ...prev,
-              {
-                original: data.payload[0][`image_${i}`],
-                thumbnail: data.payload[0][`image_${i}`],
-              }
-            ]));
-          }
-        }
-      }
-
-      setLoadingProductCount(prev => --prev);
-    })
-    .catch(error => {
-      console.error(error);
-      setLoadingProductCount(prev => --prev);
-    })
-
-    setLoadingProductVersionsCount(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_version?per_page=5&product_id=${parsed.id}&qty_critical=instock`, {
+    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_version?product_id=${parsed.product_id}&use_paginate=false&qty_critical=instock`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -77,22 +45,37 @@ const ProductDetail = () => {
     .then(response => response.json())
     .then(data => {
       if (data.error_code === 200) {
-        setProductVersions(data?.payload);
+        setProductVersions(data.payload);
 
-        for (let i = 0; i < data?.payload?.data.length; ++i) {
-          if (data.payload.data[i].is_default === true) {
-            setActiveProductVersion(i);
-            break;
-          }
-        }
-
+        const idx = data.payload?.findIndex(item => item.id == parsed.id)
+        idx > -1 && setActivateProductVersionIdx(idx);
       }
 
-      setLoadingProductVersionsCount(prev => --prev);
+      setLoadingProductCount(prev => --prev);
     })
     .catch(error => {
       console.error(error);
-      setLoadingProductVersionsCount(prev => --prev);
+      setLoadingProductCount(prev => --prev);
+    });
+
+    setLoadingProductCount(prev => ++prev);
+    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_image/thumbnail?product_id=${parsed.id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error_code === 200) {
+        setProductImages(data.payload);
+      }
+
+      setLoadingProductCount(prev => --prev);
+    })
+    .catch(error => {
+      console.error(error);
+      setLoadingProductCount(prev => --prev);
     });
 
     setLoadMoreCount(prev => ++prev);
@@ -109,7 +92,7 @@ const ProductDetail = () => {
         setProductEvaluatesPaginate({
           ...data?.payload,
           data: undefined,
-        })
+        });
       }
 
       setLoadMoreCount(prev => --prev);
@@ -122,13 +105,32 @@ const ProductDetail = () => {
   }, []);
 
   React.useEffect(() => {
-    if (!productVersions || !productVersions.data || productVersions.data.length < activeProductVersion) {
+    if (activeProductVersionIdx < 0) {
       return;
     }
 
-    setLoadingProductColorQtiesCount(prev => ++prev);
+    setLoadingProductCount(prev => ++prev);
+    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product?id=${productVersions[activeProductVersionIdx].product_id}&use_paginate=false`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error_code === 200 && data.payload.length > 0) {
+        setProduct(data.payload[0]);
+      }
 
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_color_qty/with_name?per_page=15&product_version_id=${productVersions.data?.[activeProductVersion]?.id}`, {
+      setLoadingProductCount(prev => --prev);
+    })
+    .catch(error => {
+      console.error(error);
+      setLoadingProductCount(prev => --prev);
+    });
+
+    setLoadingProductCount(prev => ++prev);
+    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_color_qty?use_paginate=false&product_version_id=${productVersions[activeProductVersionIdx].id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -140,17 +142,18 @@ const ProductDetail = () => {
         setProductColorQties(data?.payload);
       }
 
-      setLoadingProductColorQtiesCount(prev => --prev);
+      setLoadingProductCount(prev => --prev);
     })
     .catch(error => {
       console.error(error);
 
-      setLoadingProductColorQtiesCount(prev => --prev);
-    })
-  }, [productVersions, activeProductVersion]);
+      setLoadingProductCount(prev => --prev);
+    });
+  }, [activeProductVersionIdx]);
 
-  const handleSelectProductVersion = (index) => {
-    setActiveProductVersion(index);
+  const handleSelectProductVersion = (productVersionId, index) => {
+    history.push(`/rcm/order_info?id=${productVersionId}&product_id=${parsed.product_id}`);
+    setActivateProductVersionIdx(index);
   }
 
   const handleLoadMore = () => {
@@ -184,66 +187,15 @@ const ProductDetail = () => {
   }
 
   const handleAfterSubmitEvaluateModal = () => {
-    setLoadingProductCount(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product/product_id/${parsed.id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200 && data?.payload.length === 1) {
-        setProduct(data.payload[0]);
-        for (let i = 1; i < 6; ++i) {
-          if (data?.payload[0][`image_${i}`] !== undefined) {
-            setImages((prev) => ([
-              ...prev,
-              {
-                original: data.payload[0][`image_${i}`],
-                thumbnail: data.payload[0][`image_${i}`],
-              }
-            ]));
-          }
-        }
-      }
 
-      setLoadingProductCount(prev => --prev);
-
-      setLoadMoreCount(prev => ++prev);
-      fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_evaluate/with_created_user?per_page=15&product_id=${parsed.id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.error_code === 200) {
-          setProductEvaluates(data?.payload?.data);
-          setProductEvaluatesPaginate({
-            ...data?.payload,
-            data: undefined,
-          })
-        }
-
-        setLoadMoreCount(prev => --prev);
-      })
-      .catch(error => {
-        console.error(error);
-
-        setLoadMoreCount(prev => --prev);
-      });
-    })
-    .catch(error => {
-      console.error(error);
-      setLoadingProductCount(prev => --prev);
-    })
   };
 
-  const history = useHistory();
-
   const handleByNowClick = () => {
+    if (productVersions.length === 0) {
+      console.log('Product does have no versions');
+      return;
+    }
+
     var storageProducts = JSON.parse(localStorage.getItem('products'));
     if (!storageProducts) {
       storageProducts = [];
@@ -251,13 +203,12 @@ const ProductDetail = () => {
 
     var doNotUpdateStorage = false;
     for (let i = 0; i < storageProducts.length; i++) {
-      if (storageProducts[i].productId == parsed.id && 
-            productVersions?.data.length > 0 &&
-            storageProducts[i].productVersion &&
-            storageProducts[i].productVersion.id == productVersions.data[activeProductVersion].id && 
-            productColorQties?.data.length > 0 &&
-            storageProducts[i].productColorQty &&
-            storageProducts[i].productColorQty.id == productColorQties.data[activeProductColorQty].id) {
+      if (productVersions.length > 0 &&
+          storageProducts[i].productVersion &&
+          storageProducts[i].productVersion.id == productVersions[activeProductVersionIdx].id && 
+          productColorQties?.length > 0 &&
+          storageProducts[i].productColorQty &&
+          storageProducts[i].productColorQty.id == productColorQties[activeProductColorQty].id) {
         doNotUpdateStorage = true;
         break;
       }
@@ -265,21 +216,17 @@ const ProductDetail = () => {
 
     if (!doNotUpdateStorage) {
       var needUpdate = {
-        productId: parseInt(parsed.id),
         qty: 1,
+        productVersion: {
+          id: productVersions[activeProductVersionIdx].id,
+          name: productVersions[activeProductVersionIdx].name,
+        },
       }
-  
-      if (productVersions?.data.length > 0) {
-        needUpdate.productVersion = {
-          id: productVersions.data[activeProductVersion].id,
-          name: productVersions.data[activeProductVersion].name,
-        }
-      }
-  
-      if (productColorQties?.data.length > 0) {
+
+      if (productColorQties?.length > 0) {
         needUpdate.productColorQty = {
-          id: productColorQties.data[activeProductColorQty].id,
-          name: productColorQties.data[activeProductColorQty].name,
+          id: productColorQties[activeProductColorQty].id,
+          name: productColorQties[activeProductColorQty].name,
         }
       }
   
@@ -297,11 +244,11 @@ const ProductDetail = () => {
     <div className="container-xl pt-3" style={{flex: 1}}>
       {
         loadingProductCount !== 0 ? (
-          <Skeleton/>
+          <Skeleton height="18px"/>
         ) : (
           <div className="d-flex align-items-end">
             <div>
-              <span className="h5 font-weight-bold text-dark mr-2 align-bottom">{product?.name}</span>
+              <span className="h5 font-weight-bold text-dark mr-2 align-bottom">{productVersions[activeProductVersionIdx]?.name}</span>
             </div>
             <div className="mb-1 mr-2">
               <StarRatings
@@ -321,21 +268,21 @@ const ProductDetail = () => {
 
       <div className="row mt-3">
         <div className="col-4">
-          <ImageGallery showFullscreenButton={false} autoPlay={true} items={images || []}/>
+          <ImageGallery showFullscreenButton={false} autoPlay={true} items={productImages || []}/>
         </div>
         <div className="col-4">
           {
-            loadingProductVersionsCount !== 0 ? (
+            loadingProductCount !== 0 ? (
               <></>
             ) : (
               <div>
                 {
-                  productVersions?.data?.length > 0 && (
+                  productVersions?.length > 0 && (
                     <div>
-                      <span className="mr-4 text-danger h4"><strong>{productVersions?.data[activeProductVersion].official_price.toLocaleString('it-IT', {style: 'currency', currency: 'VND'}).replace('VND', 'đ')}</strong></span>
+                      <span className="mr-4 text-danger h4"><strong>{productVersions[activeProductVersionIdx].official_price.toLocaleString('it-IT', {style: 'currency', currency: 'VND'}).replace('VND', 'đ')}</strong></span>
                       {
                         product?.origin_price !== "" && (
-                          <span className="text-secondary h5"><del><strong>{productVersions?.data[activeProductVersion].origin_price.toLocaleString('it-IT', {style: 'currency', currency: 'VND'}).replace('VND', 'đ')}</strong></del></span>
+                          <span className="text-secondary h5"><del><strong>{productVersions[activeProductVersionIdx].origin_price.toLocaleString('it-IT', {style: 'currency', currency: 'VND'}).replace('VND', 'đ')}</strong></del></span>
                         )
                       }
                     </div>
@@ -347,13 +294,13 @@ const ProductDetail = () => {
 
           <div className="row">
             {
-              productVersions?.data?.map((productVersion, index) => {
+              productVersions?.map((productVersion, index) => {
                 return (
                   <div key={index} className="col-sm-12 col-lg-4 px-1 mt-2">
                     <button
-                      onClick={() => {handleSelectProductVersion(index)}}
-                      className={`w-100 h-100 ${activeProductVersion === index ? "btn btn-info" : "btn btn-outline-info"}`}
-                      disabled={activeProductVersion.instock_qty <= 0}
+                      onClick={() => {handleSelectProductVersion(productVersion.id, index)}}
+                      className={`w-100 h-100 ${activeProductVersionIdx === index ? "btn btn-info" : "btn btn-outline-info"}`}
+                      disabled={activeProductVersionIdx.instock_qty <= 0}
                     >
                       <span className="font-weight-bold h6">{productVersion.name}</span>
                       <p className="h6 mt-2">{productVersion.official_price.toLocaleString('it-IT', {style: 'currency', currency: 'VND'}).replace('VND', 'đ')}</p>
@@ -365,7 +312,7 @@ const ProductDetail = () => {
           </div>
 
           {
-            productColorQties?.data?.length > 0 && (
+            productColorQties?.length > 0 && (
               <div className="mt-3 h6 font-weight-bold">
                 <span>Chọn màu sản phẩm</span>
               </div>
@@ -373,7 +320,7 @@ const ProductDetail = () => {
           }
 
           {
-            loadingProductColorQtiesCount !== 0 ? (
+            loadingProductCount !== 0 ? (
               <div className="row mt-1">
                 <div className="col-sm-6 col-lg-4 px-1 mt-2">
                   <Skeleton height={"80px"}/>
@@ -397,7 +344,7 @@ const ProductDetail = () => {
             ) : (
               <div className="row mt-1">
                 {
-                  productColorQties?.data?.map((productColorQty, index) => {
+                  productColorQties?.map((productColorQty, index) => {
                     return (
                       <div key={index} className="col-sm-6 col-lg-4 px-1 mt-2">
                         <button
@@ -477,7 +424,7 @@ const ProductDetail = () => {
               </p>
 
               {
-                loadingEvaluationCount !== 0 ? (
+                loadingProductCount !== 0 ? (
                   <Skeleton height="80px"/>
                 ) : (
                   <>

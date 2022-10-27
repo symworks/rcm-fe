@@ -8,15 +8,16 @@ const SingleSelect
     <Controller
       name={name}
       control={control}
-      render={({field: {value, onChange, ref}}) => {
+      render={({field: {onChange, onBlur, value, name, ref}}) => {
         return (
           <Select
+            onBlur={onBlur}
+            value={value}
+            name={name}
             ref={ref}
             options={options}
             placeholder={placeholder}
-            onChange={(val) => {onChange(val.value); if (onChangeInteract) onChangeInteract(val.value)}}
-            value={options.find((c) => c.value === value)}
-            defaultValue={options.filter((option) => value === option.value)}
+            onChange={(newValue) => {onChange(newValue); if (onChangeInteract) onChangeInteract(newValue.value)}}
           />
         )
       }}

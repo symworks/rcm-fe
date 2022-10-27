@@ -23,13 +23,12 @@ const Cart = () => {
     var queryParams = "";
     storageProducts.forEach(product => {
       finalProducts.push({
-        productId: product.productId,
         productVersion: product.productVersion,
         productColorQty: product.productColorQty,
         qty: product.qty,
       });
 
-      queryParams += '&ids[]=' + product.productId;
+      queryParams += '&product_version_ids[]=' + product.productVersion.id;
     });
 
     if (queryParams.length == 0) {
@@ -38,7 +37,7 @@ const Cart = () => {
 
     queryParams = queryParams.slice(1, queryParams.length);
     setLoadingProductCount(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product/no_paginate?${queryParams}`, {
+    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_version?${queryParams}&use_paginate=false`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -46,10 +45,10 @@ const Cart = () => {
     })
     .then(response => response.json())
     .then(data => {
-      if (data.error_code === 200) {
+      if (data.error_code == 200) {
         data.payload.forEach((payloadItem) => {
-          var currentProduct = finalProducts.find(productItem => productItem.productId === payloadItem.id);
-          currentProduct && (currentProduct.productPayload = payloadItem);
+          var currentProductVersion = finalProducts.find(productVersionItem => productVersionItem.productVersion.id == payloadItem.id);
+          currentProductVersion && (currentProductVersion.productPayload = payloadItem);
         })
 
         setProducts(finalProducts);
@@ -85,7 +84,7 @@ const Cart = () => {
 
     localStorage.setItem('products', JSON.stringify(tmpProducts));
     localStorage.setItem('price', totalPrice);
-    history.push('/rcm/payment_info');
+    history.push('/rcm/order_info');
   };
 
   const handleTotalProductChange = (index, value) => {
@@ -121,10 +120,10 @@ const Cart = () => {
                 <Card className="mt-1" key={index}>
                   <Card.Body>
                     <div className="d-flex justify-content-center">
-                      <Image className="mr-3" src={product.productPayload.image_1} height={200}/>
+                      <Image className="mr-3" src={product.productPayload.image_url} height={200}/>
                       <div>
                         <div className="d-flex justify-content-between">
-                          <div className="font-weight-bold h6 text-dark">{product.productPayload.name} {product?.productVersion?.name && (' - ' + product.productVersion.name)} {product?.productColorQty?.name && (' - ' + product.productColorQty.name)}</div>
+                          <div className="font-weight-bold h6 text-dark">{product.productVersion.name} {product?.productColorQty?.name && (' - ' + product.productColorQty.name)}</div>
                           <button className="close" onClick={() => {handleClearCart(index)}}>
                             <span className="icon icon-close"></span>
                           </button>
@@ -155,7 +154,7 @@ const Cart = () => {
               <span className="font-weight-bold h6">Tổng tiền tạm tính</span>
               <span className="text-danger font-weight-bold h6">{totalPrice.toLocaleString('it-IT', {style: 'currency', currency: 'VND'}).replace('VND', 'đ')}</span>
             </div>
-            <button className="btn btn-danger w-100 mt-2 py-3 font-weight-bold h6" onClick={handleStartOrder} disabled={products.length === 0}>Tiến hành đặt hàng</button>
+            <button className="btn btn-danger w-100 mt-2 py-3 font-weight-bold h6" onClick={handleStartOrder} disabled={products.length == 0}>Tiến hành đặt hàng</button>
             <button className="btn btn-outline-danger w-100 mt-2 py-3 font-weight-bold h6" onClick={() => {history.push('/rcm')}}>Chọn thêm sản phẩm khác</button>
           </Card.Body>
         </Card>

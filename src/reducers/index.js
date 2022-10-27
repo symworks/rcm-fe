@@ -5,6 +5,7 @@ import analyticalReducer from "./analyticalReducer";
 import demographicReducer from "./demographicReducer";
 import ioTReducer from "./ioTReducer";
 import mailInboxReducer from "./mailInboxReducer";
+import notificationReducer from "./notificationReducer";
 import UIElementsReducer from "./UIElementsReducer";
 
 export default combineReducers({
@@ -14,5 +15,6 @@ export default combineReducers({
   demographicReducer: demographicReducer,
   ioTReducer: ioTReducer,
   mailInboxReducer: mailInboxReducer,
+  notificationReducer: notificationReducer,
   UIElementsReducer: UIElementsReducer,
 });

@@ -22,10 +22,10 @@ class ProductCard extends React.Component {
             <a className="text-dark" href={linkTo}>
               <strong><p>{name}</p></strong>
             </a>
-            <span className="mr-2 text-danger h6"><strong>{officialPrice.toLocaleString('it-IT', {style: 'currency', currency: 'VND'}).replace('VND', '')}</strong></span>
+            <span className="mr-2 text-danger h6"><strong>{officialPrice?.toLocaleString('it-IT', {style: 'currency', currency: 'VND'}).replace('VND', '')}</strong></span>
             {
               originPrice !== "" && (
-                <span className="text-secondary h6"><del><strong>{originPrice.toLocaleString('it-IT', {style: 'currency', currency: 'VND'}).replace('VND', 'đ')}</strong></del></span>
+                <span className="text-secondary h6"><del><strong>{originPrice?.toLocaleString('it-IT', {style: 'currency', currency: 'VND'}).replace('VND', 'đ')}</strong></del></span>
               )
             }
           </div>

@@ -1,37 +1,53 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { REACT_APP_PUBLIC_BACKEND_URL } from '../../constant/constant';
+import { Card, Image } from 'react-bootstrap';
+import {
+  REACT_APP_PUBLIC_BACKEND_URL,
+} from "../../constant/constant";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { useForm } from 'react-hook-form';
-import SingleSelect from '../../components/RcmSelect/SingleSelect';
 import { useHistory } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { onSetNotificationInfo } from "../../actions";
 
-const PaymentInfo = () => {
-  const [loadingPageCount, setLoadingPageCount] = React.useState(0);
-  const [categoryRegionOptions, setCategoryRegionOptions] = React.useState([]);
-  const [categoryProvinceOptions, setCategoryProvinceOptions] = React.useState([]);
-  const [categoryDistrictOptions, setCategoryDistrictOptions] = React.useState([]);
-  const [storesOptions, setStoresOptions] = React.useState([]);
+const qs = require('query-string');
 
-  const [activeDeliveryMethod, setActiveDeliveryMethod] = React.useState(true);
+const PaymentInfo = (props) => {
+  const [productOrderDetailState, setProductOrderDetailState] = React.useState(undefined);
+  const [paymentMethods, setPaymentMethods] = React.useState([]);
+
+  const [acceptTermsState, setAccepTermsState] = React.useState(false);
+
+  const [loadingProductOrderDetailCountState, setLoadingProductOrderDetailCountState] = React.useState(0);
+  const [loadingSubmitCountState, setLoadingSubmitCountState] = React.useState(0);
+  const [selectedPaymentMethodIndexState, setSelectedPaymentMethodIndexState] = React.useState(0);
 
   const history = useHistory();
-
-  const validationScheme = yup.object().shape({
-    name: yup.string()
-    .min(1, 'Họ và tên bắt buộc nhập'),
-    phone_number: yup.string()
-    .min(1, 'Số điện thoại bắt buộc nhập'),
-  });
-
-  const {register, handleSubmit, reset, formState: {errors}, control} = useForm({
-    resolver: yupResolver(validationScheme),
-  });
+  const parsed = qs.parse(window.location.search);
 
   React.useEffect(() => {
-    setLoadingPageCount(prev => ++prev);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/category_vn_province/select`, {
+    setLoadingProductOrderDetailCountState(prev => ++prev);
+    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_order?use_paginate=false&id=${parsed.product_order_id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error_code === 200 && data.payload[0]) {
+        setProductOrderDetailState(data.payload[0]);
+      }
+
+      setLoadingProductOrderDetailCountState(prev => --prev);
+    })
+    .catch(error => {
+      console.error(error);
+      setLoadingProductOrderDetailCountState(prev => --prev);
+    });
+
+    setLoadingProductOrderDetailCountState(prev => ++prev);
+    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/payment_method?use_paginate=false}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -40,70 +56,68 @@ const PaymentInfo = () => {
     .then(response => response.json())
     .then(data => {
       if (data.error_code === 200) {
-        setCategoryProvinceOptions(prev => [...prev, ...data.payload]);
+        setPaymentMethods(data.payload);
       }
 
-      setLoadingPageCount(prev => --prev);
+      setLoadingProductOrderDetailCountState(prev => --prev);
     })
     .catch(error => {
       console.error(error);
-      setLoadingPageCount(prev => --prev);
+      setLoadingProductOrderDetailCountState(prev => --prev);
     })
   }, []);
 
-  const handleProvinceChange = (...args) => {
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/category_vn_district/select?${args.length !== 0 ? 'province_id=' + args[0] : ''}`, {
-      method: "GET",
+  const {handleSubmit} = useForm();
+
+  const onSubmit = submitData => {
+    submitData = {
+      ...submitData,
+      payment_method_id: paymentMethods[selectedPaymentMethodIndexState].id,
+      id: parseInt(parsed.product_order_id),
+    };
+    setLoadingSubmitCountState(prev => ++prev);
+    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_order/select_method`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-      }
+      },
+      body: JSON.stringify(submitData),
     })
     .then(response => response.json())
     .then(data => {
       if (data.error_code === 200) {
-        setCategoryDistrictOptions(data.payload);
+        if (submitData.payment_method_id == 1) { // Nhận hàng trực tiếp
+          history.push('/rcm');
+          props.onSetNotificationInfo({
+            notificationType: "success",
+            dialogText: "Đơn hàng đã được đặt thành công, chúng tôi sẽ gửi email chi tiết về đơn đặt hàng cho bạn.",
+            isShow: true,
+          });
+        } else {
+          // TODO:
+          // Đến trang thanh toán
+        }
       } else {
-        setCategoryDistrictOptions([]);
+        props.onSetNotificationInfo({
+          notificationType: "error",
+          dialogText: data.msg,
+          isShow: true,
+        });
       }
 
-      setStoresOptions([]);
+      setLoadingSubmitCountState(prev => --prev);
     })
     .catch(error => {
       console.error(error);
+      setLoadingSubmitCountState(prev => --prev);
     })
   }
-
-  const handleDistrictChange = (...args) => {
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/store/select?${args.length > 0 ? 'district_id=' + args[0] : ''}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error_code === 200) {
-        setStoresOptions(data.payload);
-      }
-    })
-    .catch(error => {
-      console.error(error);
-    })
-  };
-
-  const onSubmit = data => {
-
-  };
 
   return (
     <div className="container-sm pt-4 d-flex justify-content-center">
       <div className="w-75">
-        <div className="w-75">
-          <div className="d-flex justify-content-between mb-2">
-            <a className="text-danger h6 font-weight-bold" href="/rcm"><span className="fa fa-angle-left"/> Trở về</a>
-            <span className="text-danger h5 font-weight-bold">Giỏ hàng</span>
-            <span></span>
-          </div>
+        <div className="d-flex justify-content-center mb-2">
+          <span className="text-danger h5 font-weight-bold">Thanh toán</span>
         </div>
         <div className="d-flex justify-content-center pt-2 rounded-top" style={{backgroundColor: '#fae6eb'}}>
           {
@@ -124,120 +138,75 @@ const PaymentInfo = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Card>
             <Card.Body>
-              <p className="font-weight-bold h6">Thông tin khách hàng</p>
-              <div className="form-group">
-                <input
-                  {...register("name")}
-                  className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-                  placeholder="Họ và tên (bắt buộc)"
-                  autoComplete="off"
-                />
-                <div className="invalid-feedback">{errors.name?.message}</div>
-              </div>
-              <div className="form-group">
-                <input
-                  {...register('phone_number')}
-                  className={`form-control ${errors.phone_number ? 'is-invalid' : ''}`}
-                  placeholder="Số điện thoại (bắt buộc)"
-                  autoComplete="off"
-                />
-                <div className="invalid-feedback">{errors.phone_number?.message}</div>
-              </div>
-              <div className="form-group">
-                <input
-                  {...register("email")}
-                  className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                  placeholder="Email (Vui lòng nhập email để xác nhận hóa đơn VAT)"
-                  autoComplete="off"
-                />
-                <div className="invalid-feedback">{errors.email?.message}</div>
-              </div>
-              <p className="font-weight-bold h6">Chọn cách thức giao hàng</p>
-              <div className="d-flex justify-content-start">
-                <div className="form-check mr-4">
-                  <input
-                    {...register("delivery_method")}
-                    className="form-check-input"
-                    type="radio"
-                    checked={activeDeliveryMethod}
-                    id="delivery_method_1"
-                    onClick={() => {setActiveDeliveryMethod(true);}}
-                  />
-                  <label className="form-check-label font-weight-normal" htmlFor="delivery_method_1">Nhận tại cửa hàng</label>
-                </div>
-                <div className="form-check">
-                  <input
-                    {...register("delivery_method")}
-                    className="form-check-input"
-                    type="radio"
-                    id="delivery_method_2"
-                    onClick={() => {setActiveDeliveryMethod(false);}}
-                  />
-                  <label className="form-check-label font-weight-normal" htmlFor="delivery_method_2">Giao hàng tận nơi</label>
-                </div>
-              </div>
+              <Card>
+                <Card.Body>
+                  <div className="text-center font-weight-bold h4">
+                    Thông tin đặt hàng
+                  </div>
+                  {
+                    loadingProductOrderDetailCountState ? (
+                      <Skeleton count={10}/>
+                    ) : (
+                      <>
+                        <div className="d-flex justify-content-start">
+                          <span className="mr-2 h5">Mã Đơn Hàng:</span>
+                          <span className="font-weight-bold h5">{productOrderDetailState?.id}</span>
+                        </div>
+                        <div className="d-flex justify-content-start">
+                          <span className="mr-2 h5">Người Đặt:</span>
+                          <span className="font-weight-bold h5">{productOrderDetailState?.name}</span>
+                        </div>
+                        <div className="d-flex justify-content-start">
+                          <span className="mr-2 h5">Số Điện Thoại:</span>
+                          <span className="font-weight-bold h5">{productOrderDetailState?.phone_number}</span>
+                        </div>
+                        <div className="d-flex justify-content-start">
+                          <span className="mr-2 h5">Email:</span>
+                          <span className="font-weight-bold h5">{productOrderDetailState?.email}</span>
+                        </div>
+                        {
+                          productOrderDetailState?.delivery_method === 0 ? (
+                            <div className="d-flex justify-content-start">
+                              <span className="mr-2 h5">Giao Đến:</span>
+                              <span className="font-weight-bold h5">{`${productOrderDetailState?.customer_address}, ${productOrderDetailState?.customer_province_name}, ${productOrderDetailState?.customer_district_name}`}</span>
+                            </div>
+                          ) : (
+                            <div></div>
+                          )
+                        }
+                        <div className="d-flex justify-content-start">
+                          <span className="mr-2 h5">Tổng Tiền:</span>
+                          <span className="font-weight-bold h5">{`${productOrderDetailState?.total_price} đ`}</span>
+                        </div>
 
-              <Card className="mt-3">
-                <Card.Body style={{backgroundColor: "#f7f8fa"}}>
-                  <div className="row">
-                    <div className="col-sm-12 col-lg-6">
-                      <SingleSelect
-                        name="category_vn_province_id"
-                        placeholder="Chọn tỉnh"
-                        onChangeInteract={handleProvinceChange}
-                        options={categoryProvinceOptions}
-                        control={control}
-                      />
-                    </div>
-                    <div className="col-sm-12 col-lg-6">
-                      <SingleSelect
-                        name="category_vn_district_id"
-                        placeholder="Chọn huyện"
-                        onChangeInteract={handleDistrictChange}
-                        options={categoryDistrictOptions}
-                        control={control}
-                      />
-                    </div>
-                  </div>
-                  <div className="row mt-3">
-                    <div className="col-12">
-                      <SingleSelect
-                        name="store_address_id"
-                        placeholder="Chọn cửa hàng"
-                        options={storesOptions}
-                        control={control}
-                      />
-                    </div>
-                  </div>
+                        <div className="form-group form-check">
+                          <input type="checkbox" className="form-check-input" id="agree_terms" checked={acceptTermsState} onChange={() => {setAccepTermsState(prev => !prev)}}/>
+                          <label className="form-check-label text-danger font-weight-normal h6" htmlFor="agree_terms"><em>Bằng cách đặt hàng, bạn đồng ý với Điều khoản sử dụng của Rcm</em></label>
+                        </div>
+                      </>
+                    )
+                  }
                 </Card.Body>
               </Card>
-              <div className="form-group">
-                <input
-                  {...register("request")}
-                  className={`form-control ${errors.request ? 'is-invalid' : ''}`}
-                  placeholder="Yêu cầu khác"
-                  autoComplete="off"
-                />
-                <div className="invalid-feedback">{errors.request?.message}</div>
-              </div>
-              <div className="form-check form-check-inline">
-                <input
-                  {...register("is_invoice")}
-                  id="is_invoice"
-                  className="form-check-input"
-                  type="checkbox"
-                />
-                <label className="form-check-label font-weight-normal" htmlFor="is_invoice">Yêu cầu xuất hóa đơn công ty (Vui lòng điền email để nhận hóa đơn VAT)</label>
-              </div>
-              <div className="text-danger"><u><em>(Với hóa đơn trên 20 triệu vui lòng thanh toán chuyển khoản từ tài khoản công ty khi cần xuất VAT cho công ty)</em></u></div>
-              <div className="form-check form-check-inline mt-2">
-                <input
-                  {...register("call_other")}
-                  id="call_other"
-                  className="form-check-input"
-                  type="checkbox"
-                />
-                <label className="form-check-label font-weight-normal" htmlFor="call_other">Gọi người khác nhận hàng (Nếu có)</label>
+
+              <div className="font-weight-bold h5">Chọn hình thức thanh toán</div>
+              <div className="row">
+                {
+                  paymentMethods.map((paymentMethod, index) => {
+                    return (
+                      <div className="col-sm-6" key={index}>
+                        <Card className={`${selectedPaymentMethodIndexState === index && 'border border-danger rounded'}`} style={{cursor: "pointer"}} onClick={() => setSelectedPaymentMethodIndexState(index)}>
+                          <Card.Body className="p-1">
+                            <div className="d-flex justify-content-center align-items-center flex-column pb-2">
+                              <span className="font-weight-bold mb-2">{paymentMethod?.name}</span>
+                              <Image src={paymentMethod?.logo}/>
+                            </div>
+                          </Card.Body>
+                        </Card>
+                      </div>
+                    )
+                  })
+                }
               </div>
             </Card.Body>
           </Card>
@@ -245,10 +214,9 @@ const PaymentInfo = () => {
             <Card.Body>
               <div className="d-flex justify-content-between">
                 <span className="font-weight-bold h6">Tổng tiền tạm tính</span>
-                <span className="text-danger font-weight-bold h6">{localStorage.getItem('price')}</span>
+                <span className="text-danger font-weight-bold h6">{`${productOrderDetailState?.total_price} đ`}</span>
               </div>
-              <button className="btn btn-danger w-100 mt-2 py-3 font-weight-bold h6" type="submit">Tiến hành đặt hàng</button>
-              <button className="btn btn-outline-danger w-100 mt-2 py-3 font-weight-bold h6" onClick={() => {history.push('/rcm')}}>Chọn thêm sản phẩm khác</button>
+              <button className="btn btn-danger w-100 mt-2 py-3 font-weight-bold h6" type="submit" disabled={!acceptTermsState || loadingSubmitCountState !== 0}>{loadingSubmitCountState === 0 ? "Tiếp tục" : "Đang tải"}</button>
             </Card.Body>
           </Card>
         </form>
@@ -280,4 +248,13 @@ const steps = [
   }
 ]
 
-export default PaymentInfo;
+const mapStateToProps = ({ notificationReducer }) => ({
+  notificationType: notificationReducer.notificationType,
+  position: notificationReducer.position,
+  dialogText: notificationReducer.dialogText,
+  isShow: notificationReducer.isShow,
+});
+
+export default connect(mapStateToProps, {
+  onSetNotificationInfo,
+})(PaymentInfo);

@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
+import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from "redux-thunk";
 import reducers from "./reducers";
 import { BrowserRouter } from "react-router-dom";
@@ -12,12 +13,16 @@ import "../node_modules/bootstrap/scss/bootstrap.scss";
 import "./assets/assets/scss/main.scss";
 import "./assets/assets/scss/color_skins.scss";
 import "../node_modules/font-awesome/scss/font-awesome.scss";
+import Notification from "./components/Notification";
 
-const store = createStore(reducers, applyMiddleware(thunk));
+const store = createStore(reducers, composeWithDevTools(
+  applyMiddleware(thunk),
+));
 
 ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
+      <Notification/>
       <App />
     </BrowserRouter>
   </Provider>,

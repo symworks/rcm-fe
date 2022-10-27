@@ -33,7 +33,7 @@ const ProductList = () => {
 
   React.useEffect(() => {
     const parsed = qs.parse(window.location.search);
-    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product/product_type_id/${parsed.product_type_id}${constructQueryString({per_page: 20})}`, {
+    fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_version?product_type_id=${parsed.product_type_id}${constructQueryString({per_page: 20})}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -261,13 +261,13 @@ const ProductList = () => {
                 return (
                   <div key={index} className="mx-2" style={{width: "250px"}}>
                     <ProductCard
-                      image={product.image_1}
+                      image={product.image_url}
                       name={product.name}
                       officialPrice={product.official_price}
                       originPrice={product.origin_price}
                       catagories={["RED", "BEATS", "HEADPHONE"]}
                       rate={product.average_evaluation}
-                      linkTo={`/rcm/product_detail?id=${product.id}`}
+                      linkTo={`/rcm/product_detail?id=${product.id}&product_id=${product.product_id}`}
                     />
                   </div>
                 )

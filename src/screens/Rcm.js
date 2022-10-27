@@ -41,7 +41,7 @@ const Rcm = () => {
     })
     .then(response => response.json())
     .then(data => {
-      if (data.error_code === 200) {
+      if (data.error_code == 200) {
         setProductTypes(data?.payload);
       }
 
@@ -61,7 +61,7 @@ const Rcm = () => {
     })
     .then(response => response.json())
     .then(data => {
-      if (data.error_code === 200) {
+      if (data.error_code == 200) {
         setAdsCampaigns(data?.payload);
       }
 
@@ -76,7 +76,7 @@ const Rcm = () => {
   React.useEffect(() => {
     productTypes?.data && productTypes.data.forEach(productType => {
       setLoadingProductsCount(prev => ++prev);
-      fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product?per_page=15&product_type_id=${productType.id}`, {
+      fetch(`${REACT_APP_PUBLIC_BACKEND_URL}/api/product_version?per_page=15&product_type_id=${productType.id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -84,7 +84,7 @@ const Rcm = () => {
       })
       .then(response => response.json())
       .then(data => {
-        if (data.error_code === 200) {
+        if (data.error_code == 200) {
           setProducts(prev => ([
             ...prev,
             data.payload,
@@ -133,7 +133,7 @@ const Rcm = () => {
                   {product?.data?.map((item, j) => (
                     <div key={j} className="mx-1" style={{width: "250px"}}>
                       <ProductCard
-                        image={item.image_1}
+                        image={item.image_url}
                         name={item.name}
                         officialPrice={item.official_price}
                         originPrice={item.origin_price}

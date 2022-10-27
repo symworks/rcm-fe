@@ -66,6 +66,7 @@ import rcm from "./screens/Rcm";
 import productList from "./screens/rcm/ProductList";
 import productDetail from "./screens/rcm/ProductDetail";
 import cart from "./screens/rcm/Cart";
+import orderInfo from "./screens/rcm/OrderInfo";
 import paymentInfo from "./screens/rcm/PaymentInfo";
 
 import ScrollToTop from "react-scroll-to-top";
@@ -181,6 +182,11 @@ class App extends React.Component {
                   exact
                   path={`${process.env.PUBLIC_URL}/rcm/cart`}
                   component={cart}
+                />
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/rcm/order_info`}
+                  component={orderInfo}
                 />
                 <Route
                   exact
