@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Route, Switch ,withRouter} from "react-router-dom";
+import { Route, Switch, withRouter} from "react-router-dom";
 import Login from "./screens/Login";
 import dashboard from "./screens/Dashbord/Dashbord";
 import demographic from "./screens/Dashbord/Demographic";
@@ -60,9 +60,13 @@ import basicelements from "./screens/Forms/BasicElements";
 import tablenormal from "./screens/Tables/TableNormal";
 import echart from "./screens/Charts/Echart";
 import leafletmap from "./screens/Maps/GoogleMaps";
+import PublicNavbarMenu from "./components/PublicNavbarMenu";
 
 import rcm from "./screens/Rcm";
-import PublicNavbarMenu from "./components/PublicNavbarMenu";
+import productList from "./screens/rcm/ProductList";
+import productDetail from "./screens/rcm/ProductDetail";
+
+import ScrollToTop from "react-scroll-to-top";
 
 window.__DEV__ = true;
 
@@ -85,6 +89,7 @@ class App extends React.Component {
 
     return (
       <div id="wrapper">
+        <ScrollToTop smooth />
         {activeKey1 === "" ||
         activeKey1 === "/" ||
         activeKey1 === "login" ||
@@ -159,6 +164,16 @@ class App extends React.Component {
                   exact
                   path={`${process.env.PUBLIC_URL}/rcm`}
                   component={rcm}
+                />
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/rcm/product_list`}
+                  component={productList}
+                />
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/rcm/product_detail`}
+                  component={productDetail}
                 />
               </Switch>
             </div>

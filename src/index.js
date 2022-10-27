@@ -13,7 +13,6 @@ import "./assets/assets/scss/main.scss";
 import "./assets/assets/scss/color_skins.scss";
 import "../node_modules/font-awesome/scss/font-awesome.scss";
 
-
 const store = createStore(reducers, applyMiddleware(thunk));
 
 ReactDOM.render(

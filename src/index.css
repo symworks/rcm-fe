@@ -96,9 +96,9 @@ z-index: 11112 !important;
   border-left: 0em solid transparent !important;
 }
 
-.form-control{
+/* .form-control{
   height: calc(1.5em + 0.75rem + 5px) !important;
-}
+} */
 
 .hide-toggle .btn-outline-secondary{
   height: calc(1.5em + 0.75rem + 5px) !important;

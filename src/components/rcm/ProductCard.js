@@ -4,17 +4,20 @@ import StarRatings from "react-star-ratings";
 
 class ProductCard extends React.Component {
   render() {
-    const { image, name, originPrice, officialPrice, catagories, rate, linkTo } = this.props;
+    const { image, name, originPrice, officialPrice, rate, linkTo } = this.props;
+    const discount = ((originPrice - officialPrice) * 100 / originPrice).toFixed(2);
     return (
       <div className="card">
         <div className="body">
           <div className="top-bar">
-            <span className="badge badge-pill badge-danger">Giảm {(officialPrice * 100 / originPrice).toFixed(2)} %</span>
+            <span className="badge badge-pill badge-danger">{discount > 0 ? `Giảm ${discount}` : `Tăng ${-discount}` } %</span>
             <span className="float-right icon-heart"></span>
           </div>
-          <a href={linkTo}>
-            <img className="img-fluid" src={image} alt=""/>
-          </a>
+          <div className="my-2">
+            <a href={linkTo}>
+              <img className="img-fluid" src={image} alt=""/>
+            </a>
+          </div>
           <div className="title mb-1">
             <a className="text-dark" href={linkTo}>
               <strong><p>{name}</p></strong>
@@ -36,15 +39,6 @@ class ProductCard extends React.Component {
             />
           </div>
           <hr className="mt-2"/>
-          <div className="footer">
-            {catagories.map((data, i) => {
-              return (
-                <span key={i} className="badge badge-default mt-1">
-                  {data}
-                </span>
-              );
-            })}
-          </div>
         </div>
       </div>
     );

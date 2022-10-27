@@ -17,7 +17,7 @@ function Arrow({children, disabled, onClick}) {
         flexDirection: "column",
         justifyContent: "center",
         right: "1%",
-        opacity: disabled ? "0" : "1",
+        opacity: disabled ? "0" : "0.6",
         userSelect: "none",
         border: "none",
       }}
