@@ -3,11 +3,13 @@ import { Grid, _ } from "gridjs-react";
 import React from "react";
 import { REACT_APP_PUBLIC_BACKEND_URL } from "../../constant/constant";
 import ProductVersionModal from "./ProductVersionModal";
+import ProductVersionModalImage from "./ProductVersionModalImage";
 import viVN from "../../locales/gridjs/viVN";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 function ProductVersionGrid() {
   const modalRef = React.useRef(undefined);
+  const modalImageRef = React.useRef(undefined);
   const [forceRenderState, setForceRenderState] = React.useState(false);
 
   const handleFinal = () => {
@@ -16,6 +18,7 @@ function ProductVersionGrid() {
 
   return (
     <div>
+      <ProductVersionModalImage ref={modalImageRef} />
       <ProductVersionModal ref={modalRef} handleAddFinal={handleFinal} handleUpdateFinal={handleFinal} handleDeleteFinal={handleFinal}/>
       <div className="d-flex justify-content-start mb-2">
         <button className="btn btn-outline-info mr-2" onClick={() => {modalRef?.current && modalRef.current.handleAdd();}}>
@@ -80,7 +83,7 @@ function ProductVersionGrid() {
                                 </Tooltip>
                               }
                             >
-                              <button className="btn btn-outline-info btn-sm mr-2" onClick={() => {}}><span className="icon icon-film"/></button>
+                              <button className="btn btn-outline-info btn-sm mr-2" onClick={() => {modalImageRef?.current && modalImageRef.current.handleEdit(productVersion);}}><span className="icon icon-film"/></button>
                             </OverlayTrigger>
 
                             <OverlayTrigger
