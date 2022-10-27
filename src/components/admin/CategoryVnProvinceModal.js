@@ -62,15 +62,15 @@ const CategoryVnProvinceModal = React.forwardRef(({handleAddFinal, handleUpdateF
   const onSubmit = data => {
     var axiosInstance = createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
     var handleFinal = undefined;
-    if (apiType == "insert") {
+    if (apiType === "insert") {
       handleFinal = handleAddFinal;
       axiosInstance = axiosInstance
       .post(`/api/category_vn_province`, data, {withCredentials: true});
-    } else if (apiType == "update") {
+    } else if (apiType === "update") {
       handleFinal = handleUpdateFinal;
       axiosInstance = axiosInstance
       .patch(`/api/category_vn_province`, data, {withCredentials: true});
-    } else if (apiType == "delete") {
+    } else if (apiType === "delete") {
       handleFinal = handleDeleteFinal;
       axiosInstance = axiosInstance
       .delete(`/api/category_vn_province/${data.id}`, {withCredentials: true}); 
@@ -81,7 +81,7 @@ const CategoryVnProvinceModal = React.forwardRef(({handleAddFinal, handleUpdateF
 
     axiosInstance
     .then(response => {
-      if (response.data.error_code == 200) {
+      if (response.data.error_code === 200) {
         setShow(false);
         setNotificationState({
           notificationType: "info",

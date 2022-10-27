@@ -1,8 +1,8 @@
 import React from "react";
 import PageHeader from "../../components/PageHeader";
-import UserGrid from "../../components/admin/UserGrid";
+import StoreGrid from "../../components/admin/StoreGrid";
 
-const User = (props) => {
+const Store = (props) => {
   return (
     <div
       style={{ flex: 1 }}
@@ -13,17 +13,17 @@ const User = (props) => {
       <div>
         <div className="container-fluid pb-4">
           <PageHeader
-            HeaderText="Người dùng"
+            HeaderText="Cửa hàng"
             Breadcrumb={[
               { name: "Danh mục", navigate: "" },
-              { name: "Người dùng", navigate: "" },
+              { name: "Cửa hàng", navigate: "" },
             ]}
           />
           <div className="row clearfix">
             <div className="col-lg-12 col-md-12">
               <div className="card mb-4">
                 <div className="body project_report">
-                  <UserGrid/>
+                  <StoreGrid/>
                 </div>
               </div>
             </div>
@@ -34,4 +34,4 @@ const User = (props) => {
   );
 }
 
-export default User;
+export default Store;

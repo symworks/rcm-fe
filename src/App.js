@@ -76,7 +76,10 @@ import adminRcmCategoryProductTag from "./screens/admin/CategoryProductTag";
 import adminRcmCategoryVnProvince from "./screens/admin/CategoryVnProvince";
 import adminRcmCategoryVnDistrict from "./screens/admin/CategoryVnDistrict";
 import adminRcmCategoryVnWard from "./screens/admin/CategoryVnWard";
+import adminRcmPaymentMethod from "./screens/admin/PaymentMethod";
 import adminRcmUser from "./screens/admin/User";
+import adminRcmProduct from "./screens/admin/Product";
+import adminRcmStore from "./screens/admin/Store";
 
 import ScrollToTop from "react-scroll-to-top";
 
@@ -244,8 +247,23 @@ const App = (props) => {
                 />
                 <Route
                   exact
+                  path={`${process.env.PUBLIC_URL}/payment_method`}
+                  component={adminRcmPaymentMethod}
+                />
+                <Route
+                  exact
                   path={`${process.env.PUBLIC_URL}/user`}
                   component={adminRcmUser}
+                />
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/product`}
+                  component={adminRcmProduct}
+                />
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/store`}
+                  component={adminRcmStore}
                 />
                 <Route
                   exact

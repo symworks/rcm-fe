@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { REACT_APP_PUBLIC_BACKEND_URL, REGEX_EMAIL, REGEX_PHONE_NUMER } from '../../constant/constant';
 import { useForm } from 'react-hook-form';
-import SingleSelect from '../../components/RcmSelect/SingleSelect';
+import ControlledSelect from '../../components/RcmSelect/ControlledSelect';
 import { useHistory } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
 import createAxios from '../../util/createAxios';
@@ -167,7 +167,7 @@ const OrderInfo = () => {
 
   const handleDistrictChange = (...args) => {
     createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get(`/api/store/select?${args.length > 0 ? 'district_id=' + args[0] : ''}`, {withCredentials: true})
+    .get(`/api/store?use_paginate=false&${args.length > 0 ? 'district_id=' + args[0] : ''}`, {withCredentials: true})
     .then(response => {
       if (response.data.error_code === 200) {
         setStoresOptions(response.data.payload);
@@ -330,7 +330,7 @@ const OrderInfo = () => {
                     <Card.Body style={{backgroundColor: "#f7f8fa"}}>
                       <div className="row">
                         <div className="col-sm-12 col-lg-6">
-                          <SingleSelect
+                          <ControlledSelect
                             name="store_province"
                             placeholder="Chọn tỉnh"
                             onChangeInteract={handleProvinceChange}
@@ -340,7 +340,7 @@ const OrderInfo = () => {
                           <div className="text-danger"><small>{errors.store_province?.message || errors.store_province?.label.message}</small></div>
                         </div>
                         <div className="col-sm-12 col-lg-6">
-                          <SingleSelect
+                          <ControlledSelect
                             name="store_district"
                             placeholder="Chọn huyện"
                             onChangeInteract={handleDistrictChange}
@@ -352,7 +352,7 @@ const OrderInfo = () => {
                       </div>
                       <div className="row mt-3">
                         <div className="col-12">
-                          <SingleSelect
+                          <ControlledSelect
                             name="store_address"
                             placeholder="Chọn cửa hàng"
                             options={storesOptions}
@@ -368,7 +368,7 @@ const OrderInfo = () => {
                     <Card.Body style={{backgroundColor: "#f7f8fa"}}>
                     <div className="row">
                         <div className="col-sm-12 col-lg-6">
-                          <SingleSelect
+                          <ControlledSelect
                             name="customer_province"
                             placeholder="Chọn tỉnh"
                             onChangeInteract={handleProvinceChange}
@@ -378,7 +378,7 @@ const OrderInfo = () => {
                           <div className="text-danger"><small>{errors.customer_province?.message || errors.customer_province?.label.message}</small></div>
                         </div>
                         <div className="col-sm-12 col-lg-6">
-                          <SingleSelect
+                          <ControlledSelect
                             name="customer_district"
                             placeholder="Chọn huyện"
                             onChangeInteract={handleDistrictChange}

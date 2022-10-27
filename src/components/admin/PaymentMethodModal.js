@@ -8,7 +8,7 @@ import * as yup from "yup";
 import createAxios from "../../util/createAxios";
 import Confirmation from "../Confirmation";
 
-const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, handleDeleteFinal, ...rest}, ref) => {
+const PaymentMethodModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, handleDeleteFinal, ...rest}, ref) => {
   const [show, setShow] = React.useState(false);
   const [apiType, setApiType] = React.useState("insert");
   const [deleteData, setDeleteData] = React.useState(undefined);
@@ -18,19 +18,18 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
   const confirmationRef = React.useRef(null);
 
   const validationScheme = yup.object().shape({
-    code: yup
-    .string()
-    .min(1, 'Mã vai trò bắt buộc nhập')
-    .max(255, 'Mã vai trò có tối đa 255 ký tự'),
     name: yup
     .string()
-    .min(1, 'Tên vai trò bắt buộc nhập')
-    .max(255, 'Tên vai trò có tối đa 255 ký tự'),
+    .min(1, 'Tên phương thức thanh toán bắt buộc nhập')
+    .max(255, 'Tên phương thức thanh toán có tối đa 255 ký tự'),
+    description: yup
+    .string()
+    .max(255, "Mô tả có tối đa 255 ký tự"),
   });
 
   const defaultValue = {
-    code: '',
     name: '',
+    description: '',
   };
 
   const { register, handleSubmit, reset, formState: {errors} } = useForm({
@@ -65,12 +64,12 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
     if (apiType === "insert") {
       handleFinal = handleAddFinal;
       axiosInstance = axiosInstance
-      .post(`/api/category_role`, data, {withCredentials: true});
+      .post(`/api/payment_method`, data, {withCredentials: true});
     } else if (apiType === "update") {
       if (data.is_system_role === true) {
         setNotificationState({
           notificationType: "error",
-          dialogText: "Không thể chỉnh sửa dữ vai trò hệ thống",
+          dialogText: "Không thể chỉnh sửa phương thức thanh toán",
           isShow: true,
         });
 
@@ -79,12 +78,12 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
 
       handleFinal = handleUpdateFinal;
       axiosInstance = axiosInstance
-      .patch(`/api/category_role`, data, {withCredentials: true});
+      .patch(`/api/payment_method`, data, {withCredentials: true});
     } else if (apiType === "delete") {
       if (data.is_system_role === true) {
         setNotificationState({
           notificationType: "error",
-          dialogText: "Không thể xóa dữ vai trò hệ thống",
+          dialogText: "Không thể xóa phương thức thanh toán",
           isShow: true,
         });
 
@@ -93,7 +92,7 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
 
       handleFinal = handleDeleteFinal;
       axiosInstance = axiosInstance
-      .delete(`/api/category_role/${data.id}`, {withCredentials: true}); 
+      .delete(`/api/payment_method/${data.id}`, {withCredentials: true}); 
     } else {
       console.error("something went wrong");
       return;
@@ -136,10 +135,10 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
     <div>
       <Confirmation
         ref={confirmationRef}
-        title="Xóa Vai trò"
+        title="Xóa phương thức thanh toán"
         detail={
           <span>
-            Bạn có muốn chắc xóa Vai trò <span className="font-weight-bold">{deleteData?.name}</span> không?
+            Bạn có muốn chắc xóa phương thức thanh toán <span className="font-weight-bold">{deleteData?.name}</span> không?
           </span>
         }
         handleOnYes={handleOnYesDelete}
@@ -154,7 +153,7 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
       >
         <Modal.Header closeButton>
           <div className="h5 font-weight-bold">
-            Vai trò
+            Phương thức thanh toán
           </div>
         </Modal.Header>
         <Modal.Body>
@@ -163,12 +162,12 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
               <div className="col-12">
                 <div className="form-group">
                   <input
-                    {...register("code")}
-                    className={`form-control ${errors.code ? 'is-invalid' : ''}`}
-                    placeholder="Mã vai trò"
+                    {...register("name")}
+                    className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                    placeholder="Tên phương thức thanh toán"
                     autoComplete="off"
                   />
-                  <div className="invalid-feedback">{errors.code?.message}</div>
+                  <div className="invalid-feedback">{errors.name?.message}</div>
                 </div>
               </div>
             </div>
@@ -176,12 +175,12 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
               <div className="col-12">
                 <div className="form-group">
                   <input
-                    {...register("name")}
-                    className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-                    placeholder="Tên vai trò"
+                    {...register("description")}
+                    className={`form-control ${errors.description ? 'is-invalid' : ''}`}
+                    placeholder="Mô tả"
                     autoComplete="off"
                   />
-                  <div className="invalid-feedback">{errors.name?.message}</div>
+                  <div className="invalid-feedback">{errors.description?.message}</div>
                 </div>
               </div>
             </div>
@@ -195,4 +194,4 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
   );
 });
 
-export default CategoryRoleModal;
+export default PaymentMethodModal;

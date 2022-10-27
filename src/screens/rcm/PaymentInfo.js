@@ -72,7 +72,7 @@ const PaymentInfo = (props) => {
     .patch(`/api/product_order/select_method`, submitData, {withCredentials: true})
     .then(response => {
       if (response.data.error_code === 200) {
-        if (submitData.payment_method_id == 1) { // Nhận hàng trực tiếp
+        if (submitData.payment_method_id === 1) { // Nhận hàng trực tiếp
           history.push('/rcm');
           setNotificationState({
             notificationType: "success",

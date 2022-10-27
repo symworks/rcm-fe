@@ -39,7 +39,7 @@ const Login = (props) => {
       document.body.classList.remove("theme-orange");
       document.body.classList.remove("theme-blush");
     }
-  }, [authState]);
+  }, []);
 
   const validationScheme = yup.object().shape({
     email: yup

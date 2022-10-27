@@ -42,7 +42,9 @@ const AdminNavbarMenu = (props) => {
     ) {
       activeMenutabContainer("containerAdminRcmDashboard");
     } else if (
-      activeKey === "/user"
+      activeKey === "/user" ||
+      activeKey === "/product" ||
+      activeKey === "/store"
     ) {
       activeMenutabContainer("containerAdminRcmSystem");
     }
@@ -53,7 +55,8 @@ const AdminNavbarMenu = (props) => {
       activeKey === "/category_product_tag" ||
       activeKey === "/category_vn_province" ||
       activeKey === "/category_vn_district" ||
-      activeKey === "/category_vn_ward"
+      activeKey === "/category_vn_ward" ||
+      activeKey === "/payment_method"
     ) {
       activeMenutabContainer("containerAdminRcmCategory");
     } else if (
@@ -625,9 +628,12 @@ const AdminNavbarMenu = (props) => {
                               <li className={activeKey === "category_product_tag" ? "active" : ""}>
                                 <Link to="category_product_tag">Nhãn sản phẩm</Link>
                               </li>
+                              <li className={activeKey === "payment_method" ? "active" : ""}>
+                                <Link to="payment_method">Phương thức thanh toán</Link>
+                              </li>
                             </ul>
                           </li>
-                          
+
                           <li id="containerAdminRcmSystem">
                             <a
                               href="#!"
@@ -642,6 +648,12 @@ const AdminNavbarMenu = (props) => {
                             <ul className="collapse">
                               <li className={activeKey === "user" ? "active" : ""}>
                                 <Link to="user">Người dùng</Link>
+                              </li>
+                              <li className={activeKey === "store" ? "active" : ""}>
+                                <Link to="store">Cửa hàng</Link>
+                              </li>
+                              <li className={activeKey === "product" ? "active" : ""}>
+                                <Link to="product">Sản phẩm</Link>
                               </li>
                             </ul>
                           </li>

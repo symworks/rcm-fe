@@ -2,15 +2,16 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { useForm } from "react-hook-form";
-import { REACT_APP_PUBLIC_BACKEND_URL } from "../../constant/constant";
+import { REACT_APP_PUBLIC_BACKEND_URL, REGEX_EMAIL } from "../../constant/constant";
 import { NotificationContextTemp } from "../../providers/NotificationProvider";
 import * as yup from "yup";
 import createAxios from "../../util/createAxios";
 import Confirmation from "../Confirmation";
+import ControlledSelect from "../RcmSelect/ControlledSelect";
 
-const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, handleDeleteFinal, ...rest}, ref) => {
+const UserModal = React.forwardRef(({handleUpdateFinal, handleDeleteFinal, ...rest}, ref) => {
   const [show, setShow] = React.useState(false);
-  const [apiType, setApiType] = React.useState("insert");
+  const [apiType, setApiType] = React.useState("update");
   const [deleteData, setDeleteData] = React.useState(undefined);
 
   const { setNotificationState } = React.useContext(NotificationContextTemp);
@@ -18,36 +19,57 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
   const confirmationRef = React.useRef(null);
 
   const validationScheme = yup.object().shape({
-    code: yup
-    .string()
-    .min(1, 'Mã vai trò bắt buộc nhập')
-    .max(255, 'Mã vai trò có tối đa 255 ký tự'),
     name: yup
     .string()
-    .min(1, 'Tên vai trò bắt buộc nhập')
-    .max(255, 'Tên vai trò có tối đa 255 ký tự'),
+    .min(1, "Tên người dùng bắt buộc nhập")
+    .max(255, "Tên người dùng có tối đa 255 ký tự"),
+    email: yup
+    .string()
+    .min(1, "Email bắt buộc nhập")
+    .max(255, "Email có tối đa 255 ký tự")
+    .matches(REGEX_EMAIL, "Email không hợp lệ"),
+    status: yup
+    .object()
+    .shape({
+      value: yup.number().required("Trạng thái bắt buộc chọn"),
+      label: yup.string().required("Trạng thái bắt buộc chọn")
+    })
+    .nullable()
+    .required("Trạng thái bắt buộc chọn"),
   });
 
+  const statusOpts = [
+    {
+      value: 0,
+      label: "Đang hoạt động"
+    },
+    {
+      value: 1,
+      label: "Tắt hoạt động"
+    },
+    {
+      value: 2,
+      label: "Chưa xác thực"
+    }
+  ];
+
   const defaultValue = {
-    code: '',
-    name: '',
+    name: "",
+    email: "",
+    status: statusOpts[0],
   };
 
-  const { register, handleSubmit, reset, formState: {errors} } = useForm({
+  const { register, handleSubmit, reset, formState: {errors}, control } = useForm({
     resolver: yupResolver(validationScheme),
     defaultValue: defaultValue,
   });
 
   React.useImperativeHandle(ref, () => ({
-    handleAdd: () => {
-      reset(defaultValue);
-      setApiType("insert");
-      setShow(true);
-    },
     handleEdit: (data) => {
       reset({
         ...defaultValue,
         ...data,
+        status: statusOpts.find(item => data.status === item.value)
       })
       setApiType("update");
       setShow(true);
@@ -62,38 +84,14 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
   const onSubmit = data => {
     var axiosInstance = createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
     var handleFinal = undefined;
-    if (apiType === "insert") {
-      handleFinal = handleAddFinal;
-      axiosInstance = axiosInstance
-      .post(`/api/category_role`, data, {withCredentials: true});
-    } else if (apiType === "update") {
-      if (data.is_system_role === true) {
-        setNotificationState({
-          notificationType: "error",
-          dialogText: "Không thể chỉnh sửa dữ vai trò hệ thống",
-          isShow: true,
-        });
-
-        return;
-      }
-
+    if (apiType === "update") {
       handleFinal = handleUpdateFinal;
       axiosInstance = axiosInstance
-      .patch(`/api/category_role`, data, {withCredentials: true});
+      .patch(`/api/user`, data, {withCredentials: true});
     } else if (apiType === "delete") {
-      if (data.is_system_role === true) {
-        setNotificationState({
-          notificationType: "error",
-          dialogText: "Không thể xóa dữ vai trò hệ thống",
-          isShow: true,
-        });
-
-        return;
-      }
-
       handleFinal = handleDeleteFinal;
       axiosInstance = axiosInstance
-      .delete(`/api/category_role/${data.id}`, {withCredentials: true}); 
+      .delete(`/api/user/${data.id}`, {withCredentials: true}); 
     } else {
       console.error("something went wrong");
       return;
@@ -133,13 +131,13 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
   }
 
   return (
-    <div>
+    <div {...rest}>
       <Confirmation
         ref={confirmationRef}
-        title="Xóa Vai trò"
+        title="Xóa người dùng"
         detail={
           <span>
-            Bạn có muốn chắc xóa Vai trò <span className="font-weight-bold">{deleteData?.name}</span> không?
+            Bạn có muốn chắc người dùng <span className="font-weight-bold">{deleteData?.name}</span> không?
           </span>
         }
         handleOnYes={handleOnYesDelete}
@@ -154,7 +152,7 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
       >
         <Modal.Header closeButton>
           <div className="h5 font-weight-bold">
-            Vai trò
+            Người dùng
           </div>
         </Modal.Header>
         <Modal.Body>
@@ -163,12 +161,12 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
               <div className="col-12">
                 <div className="form-group">
                   <input
-                    {...register("code")}
-                    className={`form-control ${errors.code ? 'is-invalid' : ''}`}
-                    placeholder="Mã vai trò"
+                    {...register("name")}
+                    className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                    placeholder="Tên tài khoản"
                     autoComplete="off"
                   />
-                  <div className="invalid-feedback">{errors.code?.message}</div>
+                  <div className="invalid-feedback">{errors.name?.message}</div>
                 </div>
               </div>
             </div>
@@ -176,16 +174,27 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
               <div className="col-12">
                 <div className="form-group">
                   <input
-                    {...register("name")}
-                    className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-                    placeholder="Tên vai trò"
+                    {...register("email")}
+                    className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                    placeholder="Email"
                     autoComplete="off"
                   />
-                  <div className="invalid-feedback">{errors.name?.message}</div>
+                  <div className="invalid-feedback">{errors.email?.message}</div>
                 </div>
               </div>
             </div>
-            <div className="mt-2 d-flex justify-content-end">
+            <div className="row">
+              <div className="col-12">
+                <ControlledSelect
+                  name="status"
+                  placeholder="Chọn trạng thái"
+                  onChangeInteract={() => {}}
+                  options={statusOpts}
+                  control={control}
+                />
+              </div>
+            </div>
+            <div className="mt-3 d-flex justify-content-end">
               <button type="submit" className="btn btn-outline-info">Cập nhật</button>
             </div>
           </form>
@@ -195,4 +204,4 @@ const CategoryRoleModal = React.forwardRef(({handleAddFinal, handleUpdateFinal, 
   );
 });
 
-export default CategoryRoleModal;
+export default UserModal;

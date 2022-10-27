@@ -1,8 +1,8 @@
 import React from "react";
 import PageHeader from "../../components/PageHeader";
-import UserGrid from "../../components/admin/UserGrid";
+import PaymentMethodGrid from "../../components/admin/PaymentMethodGrid";
 
-const User = (props) => {
+const PaymentMethod = (props) => {
   return (
     <div
       style={{ flex: 1 }}
@@ -23,7 +23,7 @@ const User = (props) => {
             <div className="col-lg-12 col-md-12">
               <div className="card mb-4">
                 <div className="body project_report">
-                  <UserGrid/>
+                  <PaymentMethodGrid/>
                 </div>
               </div>
             </div>
@@ -34,4 +34,4 @@ const User = (props) => {
   );
 }
 
-export default User;
+export default PaymentMethod;

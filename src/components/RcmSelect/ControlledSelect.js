@@ -2,8 +2,8 @@ import React from 'react';
 import Select from 'react-select';
 import { Controller } from 'react-hook-form';
 
-const SingleSelect
- = ({name, placeholder, options, control, onChangeInteract, ...rest}) => {
+const ControlledSelect
+ = ({name, placeholder, options, control, onChangeInteract = undefined, isMulti = false, ...rest}) => {
   return (
     <div {...rest}>
       <Controller
@@ -15,6 +15,7 @@ const SingleSelect
               onBlur={onBlur}
               value={value}
               name={name}
+              isMulti={isMulti}
               ref={ref}
               options={options}
               placeholder={placeholder}
@@ -27,4 +28,4 @@ const SingleSelect
   )
 }
 
-export default SingleSelect;
+export default ControlledSelect;

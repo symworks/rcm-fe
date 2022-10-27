@@ -1,8 +1,8 @@
 import React from "react";
 import PageHeader from "../../components/PageHeader";
-import UserGrid from "../../components/admin/UserGrid";
+import ProductGrid from "../../components/admin/ProductGrid";
 
-const User = (props) => {
+const Product = (props) => {
   return (
     <div
       style={{ flex: 1 }}
@@ -13,17 +13,17 @@ const User = (props) => {
       <div>
         <div className="container-fluid pb-4">
           <PageHeader
-            HeaderText="Người dùng"
+            HeaderText="Sản phẩm"
             Breadcrumb={[
               { name: "Danh mục", navigate: "" },
-              { name: "Người dùng", navigate: "" },
+              { name: "Sản phẩm", navigate: "" },
             ]}
           />
           <div className="row clearfix">
             <div className="col-lg-12 col-md-12">
               <div className="card mb-4">
                 <div className="body project_report">
-                  <UserGrid/>
+                  <ProductGrid/>
                 </div>
               </div>
             </div>
@@ -34,4 +34,4 @@ const User = (props) => {
   );
 }
 
-export default User;
+export default Product;
