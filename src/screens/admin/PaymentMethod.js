@@ -1,8 +1,27 @@
 import React from "react";
 import PageHeader from "../../components/PageHeader";
 import PaymentMethodGrid from "../../components/admin/PaymentMethodGrid";
+import { useHistory } from "react-router-dom";
+import { AuthContextTemp } from "../../providers/AuthContextProvider";
 
 const PaymentMethod = (props) => {
+  const history = useHistory();
+  const {authState} = React.useContext(AuthContextTemp);
+
+  React.useContext(() => {
+    const handlePaymentMethod = () => {
+      if (!authState.isLoggedin) {
+        history.push('/login?next=/payment_method');
+      }
+    }
+
+    window.addEventListener("paymentMethodInit", handlePaymentMethod);
+
+    return () => {
+      window.removeEventListener("paymentMethodInit", handlePaymentMethod);
+    }
+  }, [authState]);
+
   return (
     <div
       style={{ flex: 1 }}

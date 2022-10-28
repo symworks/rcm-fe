@@ -1,26 +1,25 @@
 import React from "react";
 import PageHeader from "../../components/PageHeader";
-import StoreGrid from "../../components/admin/StoreGrid";
+import ProductColorQtyGrid from "../../components/admin/ProductColorQtyGrid";
 import { useHistory } from "react-router-dom";
 import { AuthContextTemp } from "../../providers/AuthContextProvider";
 
-const Store = (props) => {
+const ProductVersion = (props) => {
   const history = useHistory();
   const { authState } = React.useContext(AuthContextTemp);
-  
+
   React.useLayoutEffect(() => {
-    const handleStoreInit = () => {
+    const handleProductColorQtyInit = () => {
       if (!authState.isLoggedin) {
         history.push('/login?next=/product_version');
       }
     }
 
-    window.addEventListener("storeInit", handleStoreInit);
+    window.addEventListener("productColorQtyInit", handleProductColorQtyInit);
 
     return () => {
-      window.removeEventListener("storeInit", handleStoreInit);
+      window.removeEventListener("productColorQtyInit", handleProductColorQtyInit);
     }
-
   }, [authState]);
 
   return (
@@ -33,17 +32,17 @@ const Store = (props) => {
       <div>
         <div className="container-fluid pb-4">
           <PageHeader
-            HeaderText="Cửa hàng"
+            HeaderText="Dòng sản phẩm"
             Breadcrumb={[
               { name: "Danh mục", navigate: "" },
-              { name: "Cửa hàng", navigate: "" },
+              { name: "Dòng sản phẩm", navigate: "" },
             ]}
           />
           <div className="row clearfix">
             <div className="col-lg-12 col-md-12">
               <div className="card mb-4">
                 <div className="body project_report">
-                  <StoreGrid/>
+                  <ProductColorQtyGrid/>
                 </div>
               </div>
             </div>
@@ -54,4 +53,4 @@ const Store = (props) => {
   );
 }
 
-export default Store;
+export default ProductVersion;

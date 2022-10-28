@@ -1,8 +1,27 @@
 import React from "react";
 import PageHeader from "../../components/PageHeader";
 import ProductGrid from "../../components/admin/ProductGrid";
+import { useHistory } from "react-router-dom";
+import { AuthContextTemp } from "../../providers/AuthContextProvider";
 
 const Product = (props) => {
+  const history = useHistory();
+  const {authState} = React.useContext(AuthContextTemp);
+
+  React.useLayoutEffect(() => {
+    const handleProductInit = () => {
+      if (!authState.isLoggedin) {
+        history.push('/login?next=/product');
+      }
+    }
+
+    window.addEventListener("productInit", handleProductInit);
+
+    return () => {
+      window.removeEventListener("productInit", handleProductInit);
+    }
+  }, [authState]);
+
   return (
     <div
       style={{ flex: 1 }}

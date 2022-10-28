@@ -1,8 +1,27 @@
 import React from "react";
 import PageHeader from "../../components/PageHeader";
 import CategoryVnDistrictGrid from "../../components/admin/CategoryVnDistrictGrid";
+import { AuthContextTemp } from "../../providers/AuthContextProvider";
+import { useHistory } from "react-router-dom";
 
 const CategoryVnDistrict = (props) => {
+  const { authState } = React.useContext(AuthContextTemp);
+  const history = useHistory();
+
+  React.useLayoutEffect(() => {
+    const handleCategoryVnDistrictInit = () => {
+      if (!authState.isLoggedin) {
+        history.pushState('/login?next=/category_vn_district');
+      }
+    }
+
+    window.addEventListener("categoryVnDistrict", handleCategoryVnDistrictInit);
+
+    return () => {
+      window.removeEventListener("categoryVnDistrict", handleCategoryVnDistrictInit);
+    }
+  }, [authState]);
+
   return (
     <div
       style={{ flex: 1 }}

@@ -56,7 +56,7 @@ const ProductDetail = () => {
 
     setLoadingProductCount(prev => ++prev);
     createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get(`/api/product_image/thumbnail?product_id=${parsed.product_id}`, {withCredentials: true})
+    .get(`/api/product_image?use_paginate=false&match_col=product_id&match_key=${parsed.product_id}`, {withCredentials: true})
     .then(response => {
       if (response.data.error_code === 200) {
         setProductImages(response.data.payload);
@@ -112,7 +112,7 @@ const ProductDetail = () => {
 
     setLoadingProductCount(prev => ++prev);
     createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get(`/api/product_color_qty?use_paginate=false&product_version_id=${productVersions[activeProductVersionIdx].id}`, {withCredentials: true})
+    .get(`/api/product_color_qty?use_paginate=false&match_col=product_version_id&match_key=${productVersions[activeProductVersionIdx].id}`, {withCredentials: true})
     .then(response => {
       if (response.data.error_code === 200) {
         setProductColorQties(response.data?.payload);

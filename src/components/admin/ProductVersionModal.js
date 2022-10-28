@@ -62,18 +62,6 @@ const ProductVersionModal = React.forwardRef(({handleAddFinal, handleUpdateFinal
     .number()
     .required('Giá chính thức bắt buộc nhập')
     .max(yup.ref('origin_price'), 'Giá chính thức tối đa là giá gốc'),
-    instock_qty: yup
-    .number()
-    .required('Số lượng hàng trong kho bắt buộc nhập')
-    .min(0, 'Số lượng hàng trong kho phải là số dương'),
-    sold_qty: yup
-    .number()
-    .required('Số lượng hàng đã bán bắt buộc nhập')
-    .min(0, 'Số lượng hàng đã bán phải là số dương'),
-    busy_qty: yup
-    .number()
-    .required('Số lượng hàng đang giao bắt buộc nhập')
-    .min(0, 'Số lượng hàng đang giao phải là số dương'),
   });
 
   const defaultValue = {
@@ -286,51 +274,6 @@ const ProductVersionModal = React.forwardRef(({handleAddFinal, handleUpdateFinal
                     step=".001"
                   />
                   <div className="invalid-feedback">{errors.official_price?.message}</div>
-                </div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-12">
-                <div className="form-group">
-                  <label>Số lượng trong kho</label>
-                  <input
-                    {...register("instock_qty")}
-                    className={`form-control ${errors.instock_qty ? 'is-invalid' : ''}`}
-                    placeholder="Nhập số lượng trong kho"
-                    autoComplete="off"
-                    type="number"
-                  />
-                  <div className="invalid-feedback">{errors.instock_qty?.message}</div>
-                </div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-12">
-                <div className="form-group">
-                  <label>Số lượng đã bán</label>
-                  <input
-                    {...register("sold_qty")}
-                    className={`form-control ${errors.sold_qty ? 'is-invalid' : ''}`}
-                    placeholder="Nhập số lượng đã bán"
-                    autoComplete="off"
-                    type="number"
-                  />
-                  <div className="invalid-feedback">{errors.sold_qty?.message}</div>
-                </div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-12">
-                <div className="form-group">
-                  <label>Số lượng đang giao</label>
-                  <input
-                    {...register("busy_qty")}
-                    className={`form-control ${errors.busy_qty ? 'is-invalid' : ''}`}
-                    placeholder="Nhập số lượng đang giao"
-                    autoComplete="off"
-                    type="number"
-                  />
-                  <div className="invalid-feedback">{errors.busy_qty?.message}</div>
                 </div>
               </div>
             </div>

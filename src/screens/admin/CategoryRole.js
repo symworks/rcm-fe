@@ -1,8 +1,27 @@
 import React from "react";
 import PageHeader from "../../components/PageHeader";
 import CategoryRoleGrid from "../../components/admin/CategoryRoleGrid";
+import { AuthContextTemp } from "../../providers/AuthContextProvider";
+import { useHistory } from "react-router-dom";
 
 const CategoryRole = (props) => {
+  const {authState} = React.useContext(AuthContextTemp);
+  const history = useHistory();
+
+  React.useLayoutEffect(() => {
+    const handleCategoryRoleInit = () => {
+      if (!authState.isLoggedin) {
+        history.push('/login?next=/category_role');
+      }
+    }
+
+    window.addEventListener("categoryRoleInit", handleCategoryRoleInit);
+
+    return () => {
+      window.removeEventListener("categoryRoleInit", handleCategoryRoleInit);
+    }
+  }, [authState]);
+
   return (
     <div
       style={{ flex: 1 }}

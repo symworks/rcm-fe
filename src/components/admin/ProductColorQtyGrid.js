@@ -3,13 +3,11 @@ import { Grid, _ } from "gridjs-react";
 import { REACT_APP_PUBLIC_BACKEND_URL } from "../../constant/constant";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import React from "react";
-import ProductVersionModal from "./ProductVersionModal";
-import ProductVersionModalImage from "./ProductVersionModalImage";
+import ProductColorQtyModal from "./ProductColorQtyModal";
 import viVN from "../../locales/gridjs/viVN";
 
-function ProductVersionGrid() {
+function ProductColorQtyGrid() {
   const modalRef = React.useRef(undefined);
-  const modalImageRef = React.useRef(undefined);
   const [forceRenderState, setForceRenderState] = React.useState(false);
 
   const handleFinal = () => {
@@ -18,8 +16,7 @@ function ProductVersionGrid() {
 
   return (
     <div>
-      <ProductVersionModalImage ref={modalImageRef} />
-      <ProductVersionModal ref={modalRef} handleAddFinal={handleFinal} handleUpdateFinal={handleFinal} handleDeleteFinal={handleFinal}/>
+      <ProductColorQtyModal ref={modalRef} handleAddFinal={handleFinal} handleUpdateFinal={handleFinal} handleDeleteFinal={handleFinal}/>
       <div className="d-flex justify-content-start mb-2">
         <button className="btn btn-outline-info mr-2" onClick={() => {modalRef?.current && modalRef.current.handleAdd();}}>
           <span className="fa fa-plus"></span> Thêm
@@ -28,21 +25,19 @@ function ProductVersionGrid() {
       <Grid
         columns={[
           "Id",
-          "Loại sản phẩm",
-          "Tên dòng sản phẩm",
-          "Giá gốc",
-          "Giá chính thức",
+          "Dòng sản phẩm",
+          "Tên màu",
           "Trong kho",
           "Đã bán",
           "Đang giao",
           {
             name: "Thao tác",
             sort: false,
-            width: "105px",
+            width: "65px",
           },
         ]}
         server={{
-          url: `${REACT_APP_PUBLIC_BACKEND_URL}/api/product_version`,
+          url: `${REACT_APP_PUBLIC_BACKEND_URL}/api/product_color_qty`,
           data: (opts) => {
             return new Promise((resolve, reject) => {
               const xhttp = new XMLHttpRequest();
@@ -53,15 +48,13 @@ function ProductVersionGrid() {
                     const resp = JSON.parse(this.response);
 
                     resolve({
-                      data: resp.payload.data.map(productVersion => [
-                        productVersion.id,
-                        productVersion.product_type_name,
-                        productVersion.name,
-                        productVersion.origin_price,
-                        productVersion.official_price,
-                        productVersion.instock_qty,
-                        productVersion.sold_qty,
-                        productVersion.busy_qty,
+                      data: resp.payload.data.map(productColorQty => [
+                        productColorQty.id,
+                        productColorQty.product_version_name,
+                        productColorQty.name,
+                        productColorQty.instock_qty,
+                        productColorQty.sold_qty,
+                        productColorQty.busy_qty,
                         _(
                           <div className="d-flex justify-content-start">
                             <OverlayTrigger
@@ -72,18 +65,7 @@ function ProductVersionGrid() {
                                 </Tooltip>
                               }
                             >
-                              <button className="btn btn-outline-info btn-sm mr-2 mt-2" onClick={() => {modalRef?.current && modalRef.current.handleEdit(productVersion);}}><span className="icon icon-pencil"/></button>
-                            </OverlayTrigger>
-
-                            <OverlayTrigger
-                              placement="bottom"
-                              overlay={
-                                <Tooltip>
-                                  Hình ảnh
-                                </Tooltip>
-                              }
-                            >
-                              <button className="btn btn-outline-info btn-sm mr-2 mt-2" onClick={() => {modalImageRef?.current && modalImageRef.current.handleEdit(productVersion);}}><span className="icon icon-picture"/></button>
+                              <button className="btn btn-outline-info btn-sm mr-2 mt-2" onClick={() => {modalRef?.current && modalRef.current.handleEdit(productColorQty);}}><span className="icon icon-pencil"/></button>
                             </OverlayTrigger>
 
                             <OverlayTrigger
@@ -94,10 +76,10 @@ function ProductVersionGrid() {
                                 </Tooltip>
                               }
                             >
-                              <button className="btn btn-outline-danger btn-sm mr-2 mt-2" onClick={() => {modalRef?.current && modalRef.current.handleDelete(productVersion);}}><span className="fa fa-trash-o"/></button>
+                              <button className="btn btn-outline-danger btn-sm mr-2 mt-2" onClick={() => {modalRef?.current && modalRef.current.handleDelete(productColorQty);}}><span className="fa fa-trash-o"/></button>
                             </OverlayTrigger>
                           </div>
-                        )
+                        )            
                       ]),
                       total: resp.payload.total,
                     });
@@ -133,7 +115,7 @@ function ProductVersionGrid() {
 
               const col = columns[0];
               const dir = col.direction === 1 ? 'asc' : 'desc';
-              let colName = ['id', 'product_type_name', 'name', 'origin_price', 'official_price', 'instock_qty', 'sold_qty', 'busy_qty'][col.index];
+              let colName = ['id', 'product_color_name', 'name', 'instock_qty', 'sold_qty', 'busy_qty'][col.index];
 
               return `${prev}`.includes('?') ? `${prev}&order_col=${colName}&order_key=${dir}` : `${prev}?order_col=${colName}&order_key=${dir}`
             }
@@ -144,4 +126,4 @@ function ProductVersionGrid() {
   );
 }
 
-export default ProductVersionGrid;
+export default ProductColorQtyGrid;

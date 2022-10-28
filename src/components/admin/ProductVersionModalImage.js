@@ -1,112 +1,150 @@
 import React from "react";
-import { Modal } from "react-bootstrap";
-import { useForm } from "react-hook-form";
+import { Image, Modal } from "react-bootstrap";
 import { REACT_APP_PUBLIC_BACKEND_URL } from "../../constant/constant";
-import { NotificationContextTemp } from "../../providers/NotificationProvider";
 import createAxios from "../../util/createAxios";
-import Confirmation from "../Confirmation";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import _ from 'lodash';
+import { NotificationContextTemp } from "../../providers/NotificationProvider";
 
 const ProductVersionModalImage = React.forwardRef(({handleAddFinal = undefined, handleUpdateFinal = undefined, handleDeleteFinal = undefined, ...rest}, ref) => {
   const [show, setShow] = React.useState(false);
-  const [apiType, setApiType] = React.useState("insert");
-  const [deleteData, setDeleteData] = React.useState(undefined);
+  const [isLoading, setIsLoading] = React.useState(false);
   const { setNotificationState } = React.useContext(NotificationContextTemp);
 
+  const [initialImages, setInitialImages] = React.useState([]);
   const [images, setImages] = React.useState([]);
-  const confirmationRef = React.useRef(null);
-
-  const { register, handleSubmit, reset, formState: {errors}, control } = useForm();
-
+  const [submitState, setSubmitState] = React.useState({
+    showFailed: false,
+    totalRequested: 0,
+    totalResponsed: 0,
+  });
   React.useImperativeHandle(ref, () => ({
     handleAdd: () => {
-      reset(defaultValue);
-      setApiType("insert");
       setShow(true);
     },
     handleEdit: (data) => {
-      reset({
-        ...defaultValue,
-        ...data,
-      });
-
+      setIsLoading(true);
       createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-      .get(`/api/`)
+      .get(`/api/product_image?use_paginate=false&match_col=product_id&match_key=${data.product_id}`, {withCredentials: true})
+      .then(response => {
+        if (response.data.error_code === 200) {
+          setImages([...response.data.payload]);
+          setInitialImages([...response.data.payload]);
+        }
+
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.error(error);
+        setIsLoading(false);
+      })
 
       setShow(true);
     },
-    handleDelete: (data) => {
-      setDeleteData(data);
-      setApiType("delete");
-      confirmationRef.current && confirmationRef.current.handleOpen();
-    }
   }));
 
-  const onSubmit = data => {
-    var axiosInstance = createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    var handleFinal = undefined;
-    if (apiType === "insert") {
-      handleFinal = handleAddFinal;
-      axiosInstance = axiosInstance
-      .post(`/api/product_version`, data, {withCredentials: true});
-    } else if (apiType === "update") {
-      handleFinal = handleUpdateFinal;
-      axiosInstance = axiosInstance
-      .patch(`/api/product_version`, data, {withCredentials: true});
-    } else if (apiType === "delete") {
-      handleFinal = handleDeleteFinal;
-      axiosInstance = axiosInstance
-      .delete(`/api/product_version/${data.id}`, {withCredentials: true});
-    } else {
-      console.error("something went wrong");
+  const onSubmit = (event) => {
+    event.preventDefault();
+    const insertImages = _.difference(images, initialImages);
+    const deleteImages = _.difference(initialImages, images);
+
+    setSubmitState(prev => {
+      return {
+        ...prev,
+        totalRequested: insertImages.length + deleteImages.length,
+      };
+    });
+
+    insertImages.forEach(item => {
+      createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+      .post(`/api/product_image`, {
+        ...item
+      }, {withCredentials: true})
+      .then(response => {
+        if (response.data.error_code === 200) {
+          setSubmitState(prev => {
+            return {
+              ...prev,
+              totalResponsed: prev.totalResponsed + 1,
+            }
+          })
+        } else {
+          setSubmitState(prev => {
+            return {
+              ...prev,
+              totalResponsed: prev.totalResponsed + 1,
+              showFailed: true,
+            }
+          });
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    });
+
+    deleteImages.forEach(item => {
+      createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
+      .delete(`/api/product_image/${item.id}`, {withCredentials: true})
+      .then(response => {
+        if (response.data.error_code === 200) {
+          setSubmitState(prev => {
+            return {
+              ...prev,
+              totalResponsed: prev.totalResponsed + 1,
+            }
+          });
+        } else {
+          setSubmitState(prev => {
+            return {
+              ...prev,
+              totalResponsed: prev.totalResponsed + 1,
+              showFailed: true,
+            }
+          });
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    });
+  };
+
+  const handleRemoveItem = (item) => {
+    setImages(prev => {
+      const idx = prev.indexOf(item);
+      if (idx > -1) {
+        prev.splice(idx, 1);
+      }
+
+      return [...prev];
+    })
+  }
+
+  React.useState(() => {
+    if (submitState.totalRequested === 0 || submitState.totalRequested !== submitState.totalResponsed) {
       return;
     }
 
-    axiosInstance
-    .then(response => {
-      if (response.data.error_code === 200) {
-        setShow(false);
-        setNotificationState({
-          notificationType: "info",
-          dialogText: "Thao tác thành công",
-          isShow: true,
-        });
-
-        if (handleFinal) {
-          handleFinal();
-        }
-
-        return;
-      }
-
-      //
+    if (submitState.showFailed) {
       setNotificationState({
         notificationType: "error",
-        dialogText: response.data.msg,
+        dialogText: "Thao tác thất bại",
         isShow: true,
       });
-    })
-    .catch(error => {
-      console.error(error);
-    });
-  }
+    } else {
+      setNotificationState({
+        notificationType: "info",
+        dialogText: "Thao tác thành công",
+        isShow: true,
+      });
+    }
 
-  const handleOnYesDelete = () => {
-    onSubmit(deleteData);
-  }
+  }, [submitState]);
 
   return (
     <div {...rest}>
-      <Confirmation
-        ref={confirmationRef}
-        title="Xóa dòng sản phẩm"
-        detail={
-          <span>
-            Bạn có muốn chắc xóa dòng sản phẩm <span className="font-weight-bold">{deleteData?.name}</span> không?
-          </span>
-        }
-        handleOnYes={handleOnYesDelete}
-        handleOnNo={() => {}}
-      />
       <Modal
         show={show}
         onHide={() => {setShow(false);}}
@@ -119,11 +157,48 @@ const ProductVersionModalImage = React.forwardRef(({handleAddFinal = undefined, 
             Dòng sản phẩm
           </div>
         </Modal.Header>
-        <Modal.Body>
-          <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={(event) => {onSubmit(event);}}>
+          <Modal.Body>
+              {
+                isLoading ? (
+                  <Skeleton height="30px"/>
+                ) : (
+                  <div className="row">
+                    {
+                      images.map((item, index) => {
+                        return (
+                          <div key={index} className="col-3 my-2">
+                            <div className="d-flex align-items-end justify-content-end" span='XL1 L1 M1 S1'>
+                              <div
+                                onClick={() => {handleRemoveItem(item);}}
+                                style={{cursor: "pointer"}}
+                              >
+                                <i className="icon-close"></i>
+                              </div>
+                            </div>
+                            <Image
+                              className="w-100"
+                              src={`${item.image_url}`}
+                            />
+                          </div> 
+                        )
+                      })
+                    }
 
-          </form>
-        </Modal.Body>
+                    <div className="col-3 my-2">
+                      <span
+                        className="w-100 h-100 border d-flex justify-content-center align-items-center"
+                        style={{fontSize: "50px", cursor: "pointer"}}
+                      >+</span>
+                    </div>
+                  </div>
+                )
+              }
+          </Modal.Body>
+          <Modal.Footer>
+            <button type="submit" className="btn btn-outline-info">Cập nhật</button>
+          </Modal.Footer>
+        </form>
       </Modal>
     </div>
   );

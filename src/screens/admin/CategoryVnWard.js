@@ -1,8 +1,27 @@
 import React from "react";
 import PageHeader from "../../components/PageHeader";
 import CategoryVnWardGrid from "../../components/admin/CategoryVnWardGrid";
+import { useHistory } from "react-router-dom";
+import { AuthContextTemp } from "../../providers/AuthContextProvider";
 
 const CategoryVnWard = (props) => {
+  const history = useHistory();
+  const { authState } = React.useContext(AuthContextTemp);
+
+  React.useLayoutEffect(() => {
+    const handleCategoryVnWardInit = () => {
+      if (!authState.isLoggedin) {
+        history.push('/login?next=/category_vn_ward');
+      }
+    }
+
+    window.addEventListener("categoryVnWardInit", handleCategoryVnWardInit);
+
+    return () => {
+      window.removeEventListener("categoryVnWardInit", handleCategoryVnWardInit);
+    }
+  }, [authState]);
+
   return (
     <div
       style={{ flex: 1 }}

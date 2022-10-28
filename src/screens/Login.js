@@ -21,25 +21,32 @@ const Login = (props) => {
   const { authState, setAuthState } = React.useContext(AuthContextTemp);
 
   React.useLayoutEffect(() => {
-    if (authState.isLoggedin) {
-      if (parsed.next) {
-        history.push(parsed.next);
-      } else {
-        history.push('/rcm');
+    const handleLoginInit = () => {
+      if (authState.isLoggedin) {
+        if (parsed.next) {
+          history.push(parsed.next);
+        } else {
+          history.push('/rcm');
+        }
       }
-
-      return;
+  
+      if (!authState.isLoading) {
+        document.body.classList.remove("theme-cyan");
+        document.body.classList.remove("theme-purple");
+        document.body.classList.remove("theme-blue");
+        document.body.classList.remove("theme-green");
+        document.body.classList.remove("theme-orange");
+        document.body.classList.remove("theme-blush");
+      }
     }
 
-    if (!authState.isLoading) {
-      document.body.classList.remove("theme-cyan");
-      document.body.classList.remove("theme-purple");
-      document.body.classList.remove("theme-blue");
-      document.body.classList.remove("theme-green");
-      document.body.classList.remove("theme-orange");
-      document.body.classList.remove("theme-blush");
+    window.addEventListener("loginInit", handleLoginInit);
+
+    return () => {
+      window.removeEventListener("loginInit", handleLoginInit);
     }
-  }, []);
+
+  }, [authState]);
 
   const validationScheme = yup.object().shape({
     email: yup

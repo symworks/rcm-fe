@@ -1,11 +1,30 @@
 import React from "react";
 import PageHeader from "../../components/PageHeader";
 import ProductTypeGrid from "../../components/admin/ProductTypeGrid";
+import { useHistory } from "react-router-dom";
+import { AuthContextTemp } from "../../providers/AuthContextProvider";
 
 const ProductType = (props) => {
+  const history = useHistory();
+  const {authState} = React.useContext(AuthContextTemp);
+
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  React.useLayoutEffect(() => {
+    const handleProductTypeInit = () => {
+      if (!authState.isLoggedin) {
+        history.push('/login?next=/product_type');
+      }
+    }
+
+    window.addEventListener("productTypeInit", handleProductTypeInit);
+
+    return () => {
+      window.removeEventListener("productTypeInit", handleProductTypeInit);
+    }
+  }, [authState]);
 
   return (
     <div

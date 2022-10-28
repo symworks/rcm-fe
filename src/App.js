@@ -81,6 +81,7 @@ import adminRcmUser from "./screens/admin/User";
 import adminRcmProduct from "./screens/admin/Product";
 import adminRcmStore from "./screens/admin/Store";
 import adminRcmProductVersion from "./screens/admin/ProductVersion";
+import adminRcmProductColorQty from "./screens/admin/ProductColorQty";
 
 import ScrollToTop from "react-scroll-to-top";
 
@@ -270,6 +271,11 @@ const App = (props) => {
                   exact
                   path={`${process.env.PUBLIC_URL}/product_version`}
                   component={adminRcmProductVersion}
+                />
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/product_color_qty`}
+                  component={adminRcmProductColorQty}
                 />
                 <Route
                   exact
