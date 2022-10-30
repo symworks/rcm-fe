@@ -46,8 +46,10 @@ const AdminNavbarMenu = (props) => {
       activeKey === "/product" ||
       activeKey === "/store" ||
       activeKey === "/product_version" ||
-      activeKey === "/product_color_qty"
-    ) {
+      activeKey === "/product_color_qty" ||
+      activeKey === "/ads_campaign" ||
+      activeKey === "/product_order"
+      ) {
       activeMenutabContainer("containerAdminRcmSystem");
     }
     
@@ -662,6 +664,12 @@ const AdminNavbarMenu = (props) => {
                               </li>
                               <li className={activeKey === "product_color_qty" ? "active" : ""}>
                                 <Link to="product_color_qty">Màu sản phẩm</Link>
+                              </li>
+                              <li className={activeKey === "ads_campaign" ? "active" : ""}>
+                                <Link to="ads_campaign">Chiến dịch quảng cáo</Link>
+                              </li>
+                              <li className={activeKey === "product_order" ? "active" : ""}>
+                                <Link to="product_order">Đặt hàng</Link>
                               </li>
                             </ul>
                           </li>

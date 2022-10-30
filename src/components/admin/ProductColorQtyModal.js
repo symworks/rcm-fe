@@ -25,7 +25,7 @@ const ProductColorQtyModal = React.forwardRef(({handleAddFinal, handleUpdateFina
   React.useEffect(() => {
     setIsLoading(prev => ++prev);
     createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get(`/api/product_version?use_paginate=false&fields[]=id as value&fiedls[]=name as label`, {withCredentials: true})
+    .get(`/api/product_version?use_paginate=false&fields[]=id as value&fields[]=name as label`, {withCredentials: true})
     .then(response => {
       if (response.data.error_code === 200) {
         setProductVersionOpts(response.data.payload);
@@ -86,7 +86,8 @@ const ProductColorQtyModal = React.forwardRef(({handleAddFinal, handleUpdateFina
         ...defaultValue,
         ...data,
         product_version: {
-          value: data.product_version_iod
+          value: data.product_version_id,
+          label: data.product_version_name,
         }
       })
       setApiType("update");
@@ -184,7 +185,75 @@ const ProductColorQtyModal = React.forwardRef(({handleAddFinal, handleUpdateFina
                 <Skeleton height={40}/>
               ) : (
                 <div>
-
+                  <div className="row">
+                    <div className="col-12">
+                      <div className="form-group">
+                        <label>Dòng sản phẩm</label>
+                        <ControlledSelect
+                          name="product_version"
+                          placeholder="Chọn dòng sản phẩm"
+                          options={productVersionOpts}
+                          control={control}
+                        />
+                        <div className="text-danger"><small>{errors.product_version?.message || errors.product_version?.label.message}</small></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-12">
+                      <div className="form-group">
+                        <label>Tên màu</label>
+                        <input
+                          {...register("name")}
+                          className="form-control"
+                          placeholder="Nhập tên màu"
+                        />
+                        <div className="invalid-feedback">{errors.name?.message}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-12">
+                      <div className="form-group">
+                        <label>Số lượng trong kho</label>
+                        <input
+                          {...register("instock_qty")}
+                          className="form-control"
+                          placeholder="Nhập số lượng trong kho"
+                          type="number"
+                        />
+                        <div className="invalid-feedback">{errors.instock_qty?.message}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-12">
+                      <div className="form-group">
+                        <label>Số lượng đã bán</label>
+                        <input
+                          {...register("sold_qty")}
+                          className="form-control"
+                          placeholder="Nhập số lượng đã bán"
+                          type="number"
+                        />
+                        <div className="invalid-feedback">{errors.sold_qty?.message}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-12">
+                      <div className="form-group">
+                        <label>Số lượng đang vận chuyển</label>
+                        <input
+                          {...register("busy_qty")}
+                          className="form-control"
+                          placeholder="Nhập số lượng đang vận chuyển"
+                          type="number"
+                        />
+                        <div className="invalid-feedback">{errors.busy_qty?.message}</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )
             }

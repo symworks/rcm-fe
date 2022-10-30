@@ -82,6 +82,8 @@ import adminRcmProduct from "./screens/admin/Product";
 import adminRcmStore from "./screens/admin/Store";
 import adminRcmProductVersion from "./screens/admin/ProductVersion";
 import adminRcmProductColorQty from "./screens/admin/ProductColorQty";
+import adminRcmAdsCampaign from "./screens/admin/AdsCampaign";
+import adminRcmProductOrder from "./screens/admin/ProductOrder";
 
 import ScrollToTop from "react-scroll-to-top";
 
@@ -276,6 +278,16 @@ const App = (props) => {
                   exact
                   path={`${process.env.PUBLIC_URL}/product_color_qty`}
                   component={adminRcmProductColorQty}
+                />
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/ads_campaign`}
+                  component={adminRcmAdsCampaign}
+                />
+                <Route
+                  exact
+                  path={`${process.env.PUBLIC_URL}/product_order`}
+                  component={adminRcmProductOrder}
                 />
                 <Route
                   exact
