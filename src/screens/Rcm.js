@@ -68,7 +68,7 @@ const Rcm = () => {
     productTypes?.data && productTypes.data.forEach(productType => {
       setLoadingProductsCount(prev => ++prev);
       createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-      .get(`/api/product_version?per_page=15&product_type_id=${productType.id}`, {withCredentials: true})
+      .get(`/api/product_version?per_page=15&match_col=product_versions.product_type_id&match_key=${productType.id}`, {withCredentials: true})
       .then(response => {
         if (response.data.error_code == 200) {
           setProducts(prev => ([
@@ -119,13 +119,13 @@ const Rcm = () => {
                   {product?.data?.map((item, j) => (
                     <div key={j} className="mx-1" style={{width: "250px"}}>
                       <ProductCard
-                        image={item.image_url}
+                        image={item.default_image}
                         name={item.name}
                         officialPrice={item.official_price}
                         originPrice={item.origin_price}
                         catagories={["RED", "BEATS", "HEADPHONE"]}
                         rate={item.average_evaluation}
-                        linkTo="http://localhost:3000/uiicons"
+                        linkTo={`/rcm/product_detail?id=${item.id}&product_id=${item.product_id}`}
                       />
                     </div>
                   ))}

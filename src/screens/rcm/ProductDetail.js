@@ -38,7 +38,7 @@ const ProductDetail = () => {
   React.useEffect(() => {
     setLoadingProductCount(prev => ++prev);
     createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get(`/api/product_version?product_id=${parsed.product_id}&use_paginate=false&qty_critical=instock`, {withCredentials: true})
+    .get(`/api/product_version?match_col=product_versions.product_id&match_key=${parsed.product_id}&numcomp_col=product_versions.instock_qty&numcomp_opt=>&numcomp_val=0&use_paginate=false`, {withCredentials: true})
     .then(response => {
       if (response.data.error_code === 200) {
         setProductVersions(response.data.payload);
@@ -56,7 +56,7 @@ const ProductDetail = () => {
 
     setLoadingProductCount(prev => ++prev);
     createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get(`/api/product_image?use_paginate=false&match_col=product_id&match_key=${parsed.product_id}`, {withCredentials: true})
+    .get(`/api/product_image?use_paginate=false&match_col=product_id&match_key=${parsed.product_id}&fields[]=image_url as original&fields[]=image_url as thumbnail`, {withCredentials: true})
     .then(response => {
       if (response.data.error_code === 200) {
         setProductImages(response.data.payload);
@@ -128,7 +128,7 @@ const ProductDetail = () => {
   }, [activeProductVersionIdx]);
 
   const handleSelectProductVersion = (productVersionId, index) => {
-    history.push(`/rcm/order_info?id=${productVersionId}&product_id=${parsed.product_id}`);
+    // history.push(`/rcm/order_info?id=${productVersionId}&product_id=${parsed.product_id}`);
     setActivateProductVersionIdx(index);
   }
 

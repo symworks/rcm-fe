@@ -31,7 +31,7 @@ const ProductList = () => {
   React.useEffect(() => {
     const parsed = qs.parse(window.location.search);
     createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get(`/api/product_version?product_type_id=${parsed.product_type_id}${constructQueryString({per_page: 20})}`, {withCredentials: true})
+    .get(`/api/product_version?product_versions.product_type_id=${parsed.product_type_id}${constructQueryString({per_page: 20})}`, {withCredentials: true})
     .then(response => {
       if (response.data.error_code === 200) {
         setProducts(response.data?.payload?.data);
@@ -238,7 +238,7 @@ const ProductList = () => {
                 return (
                   <div key={index} className="mx-2" style={{width: "250px"}}>
                     <ProductCard
-                      image={product.image_url}
+                      image={product.default_image}
                       name={product.name}
                       officialPrice={product.official_price}
                       originPrice={product.origin_price}

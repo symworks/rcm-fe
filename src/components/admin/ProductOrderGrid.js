@@ -7,6 +7,30 @@ import viVN from "../../locales/gridjs/viVN";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 function ProductOrderGrid() {
+  const statusMaps = [
+    <div>
+      Chưa hoàn thành đặt hàng
+    </div>,
+    <div>
+      Chờ khách hàng thanh toán
+    </div>,
+    <div>
+      Khách hàng đã thanh toán
+    </div>,
+    <div>
+      Chờ nhân viên xác nhận đơn hàng
+    </div>,
+    <div>
+      Nhân viên đã xác nhận đặt hàng
+    </div>,
+    <div>
+      Đơn hàng chờ vận chuyển
+    </div>,
+    <div>
+      Đã vận chuyển
+    </div>
+  ]
+
   const modalRef = React.useRef(undefined);
   const [forceRenderState, setForceRenderState] = React.useState(false);
 
@@ -24,21 +48,52 @@ function ProductOrderGrid() {
       </div>
       <Grid
         columns={[
-          "Id",
+          {
+            name: "Id",
+            width: "32px"
+          },
           "Tên người đặt",
           "Số điện thoại",
           "Email",
-          "Phương thức vận chuyển",
-          "Phương thức thanh toán",
-          "Địa chỉ",
+          {
+            name: "Vận chuyển",
+            formatter: (value) => _(
+              <div>
+                {
+                  value == 0 ? (
+                    <div>
+                      Nhận tại cửa hàng
+                    </div>
+                  ) : (
+                    <div>
+                      Giao hàng tận nơi
+                    </div>
+                  )
+                }
+              </div>
+            )
+          },
+          "Thanh toán",
+          {
+            name: "Địa chỉ",
+            width: "300px"
+          },
           "Yêu cầu khác",
-          "Tổng số tiền",
-          "Xuất hóa đơn",
-          "Gọi khi nhận hàng",
-          "Trạng thái",
+          "Tổng tiền",
+          {
+            name: "Trạng thái",
+            formatter: (value) => _(
+              <div>
+                {
+                  statusMaps[value]
+                }
+              </div>
+            )
+          },
           {
             name: "Thao tác",
-            sort: false
+            sort: false,
+            width: "100px"
           },
         ]}
         server={{
@@ -58,21 +113,12 @@ function ProductOrderGrid() {
                         productOrder.name,
                         productOrder.phone_number,
                         productOrder.email,
-                        {
-                          name: "delivery_method",
-                          formatter: (text) => _(
-                            <div>
-                              {
-                                text ? (
-                                  <span>Nhận tại cửa hàng</span>
-                                ) : (
-                                  <span>Giao hàng trực tiếp</span>
-                                )
-                              }
-                            </div>
-                          )
-                        },
-                        productOrder.
+                        productOrder.delivery_method,
+                        productOrder.payment_method_name,
+                        productOrder.customer_address,
+                        productOrder.other_request,
+                        productOrder.total_price,
+                        productOrder.status,
                         _(
                           <div className="d-flex justify-content-start">
                             <OverlayTrigger
@@ -83,7 +129,18 @@ function ProductOrderGrid() {
                                 </Tooltip>
                               }
                             >
-                              <button className="btn btn-outline-info mr-2" onClick={() => {modalRef?.current && modalRef.current.handleEdit(productOrder);}}><span className="icon icon-pencil"/></button>
+                              <button className="btn btn-outline-info btn-sm mr-2" onClick={() => {modalRef?.current && modalRef.current.handleEdit(productOrder);}}><span className="icon icon-pencil"/></button>
+                            </OverlayTrigger>
+
+                            <OverlayTrigger
+                              placement="bottom"
+                              overlay={
+                                <Tooltip>
+                                  Sản phẩn đặt
+                                </Tooltip>
+                              }
+                            >
+                              <button className="btn btn-outline-info btn-sm mr-2" onClick={() => {modalRef?.current && modalRef.current.handleEdit(productOrder);}}><span className="icon icon-present"/></button>
                             </OverlayTrigger>
 
                             <OverlayTrigger
@@ -94,7 +151,7 @@ function ProductOrderGrid() {
                                 </Tooltip>
                               }
                             >
-                              <button className="btn btn-outline-danger" onClick={() => {modalRef?.current && modalRef.current.handleDelete(productOrder);}}><span className="fa fa-trash-o"/></button>
+                              <button className="btn btn-outline-danger btn-sm mr-2" onClick={() => {modalRef?.current && modalRef.current.handleDelete(productOrder);}}><span className="fa fa-trash-o"/></button>
                             </OverlayTrigger>
                           </div>
                         )
@@ -133,7 +190,7 @@ function ProductOrderGrid() {
 
               const col = columns[0];
               const dir = col.direction === 1 ? 'asc' : 'desc';
-              let colName = ['id', 'code', 'name'][col.index];
+              let colName = ['id', 'name', 'phone_number', 'email', 'delivery_method', 'payment_method_name', 'customer_address', 'other_request', 'total_price', 'status'][col.index];
 
               return `${prev}`.includes('?') ? `${prev}&order_col=${colName}&order_key=${dir}` : `${prev}?order_col=${colName}&order_key=${dir}`
             }

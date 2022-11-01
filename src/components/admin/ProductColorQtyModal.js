@@ -25,7 +25,7 @@ const ProductColorQtyModal = React.forwardRef(({handleAddFinal, handleUpdateFina
   React.useEffect(() => {
     setIsLoading(prev => ++prev);
     createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get(`/api/product_version?use_paginate=false&fields[]=id as value&fields[]=name as label`, {withCredentials: true})
+    .get(`/api/product_version?use_paginate=false&fields[]=product_versions.id as value&fields[]=product_versions.name as label`, {withCredentials: true})
     .then(response => {
       if (response.data.error_code === 200) {
         setProductVersionOpts(response.data.payload);
