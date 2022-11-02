@@ -134,7 +134,7 @@ const OrderInfo = () => {
   React.useEffect(() => {
     setLoadingPageCount(prev => ++prev);
     createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get('/api/category_vn_province?use_paginate=false', {withCredentials: true})
+    .get('/api/category_vn_province?use_paginate=false&fields[]=id as value&fields[]=name as label', {withCredentials: true})
     .then(response => {
       if (response.data.error_code === 200) {
         setCategoryProvinceOptions(prev => [...prev, ...response.data.payload]);
@@ -150,7 +150,7 @@ const OrderInfo = () => {
 
   const handleProvinceChange = (...args) => {
     createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get(`/api/category_vn_district?use_paginate=false&${args.length !== 0 ? 'province_id=' + args[0] : ''}`, {withCredentials: true})
+    .get(`/api/category_vn_district?use_paginate=false&fields[]=id as value&fields[]=name as label&${args.length !== 0 ? 'province_id=' + args[0] : ''}`, {withCredentials: true})
     .then(response => {
       if (response.data.error_code === 200) {
         setCategoryDistrictOptions(response.data.payload);
@@ -167,7 +167,7 @@ const OrderInfo = () => {
 
   const handleDistrictChange = (...args) => {
     createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get(`/api/store?use_paginate=false&${args.length > 0 ? 'district_id=' + args[0] : ''}`, {withCredentials: true})
+    .get(`/api/store?use_paginate=false&fields[]=id as value&fields[]=name as label&${args.length > 0 ? 'district_id=' + args[0] : ''}`, {withCredentials: true})
     .then(response => {
       if (response.data.error_code === 200) {
         setStoresOptions(response.data.payload);

@@ -29,7 +29,7 @@ const Cart = () => {
         qty: product.qty,
       });
 
-      queryParams += '&product_version_ids[]=' + product.productVersion.id;
+      queryParams += '&match_keys[]=' + product.productVersion.id;
     });
 
     if (queryParams.length == 0) {
@@ -39,13 +39,13 @@ const Cart = () => {
     queryParams = queryParams.slice(1, queryParams.length);
     setLoadingProductCount(prev => ++prev);
     createAxios(`${REACT_APP_PUBLIC_BACKEND_URL}`)
-    .get(`/api/product_version?${queryParams}&use_paginate=false`, {withCredentials: true})
+    .get(`/api/product_version?match_col=product_versions.id&${queryParams}&use_paginate=false`, {withCredentials: true})
     .then(response => {
       if (response.data.error_code == 200) {
         response.data.payload.forEach((payloadItem) => {
           var currentProductVersion = finalProducts.find(productVersionItem => productVersionItem.productVersion.id == payloadItem.id);
           currentProductVersion && (currentProductVersion.productPayload = payloadItem);
-        })
+        });
 
         setProducts(finalProducts);
       }
@@ -115,7 +115,7 @@ const Cart = () => {
                 <Card className="mt-1" key={index}>
                   <Card.Body>
                     <div className="d-flex justify-content-center">
-                      <Image className="mr-3" src={product.productPayload.image_url} height={200}/>
+                      <Image className="mr-3" src={product.productPayload.default_image} height={200}/>
                       <div>
                         <div className="d-flex justify-content-between">
                           <div className="font-weight-bold h6 text-dark">{product.productVersion.name} {product?.productColorQty?.name && (' - ' + product.productColorQty.name)}</div>
