@@ -92,7 +92,7 @@ function UserGrid() {
                     const resp = JSON.parse(this.response);
 
                     resolve({
-                      data: resp.payload.data.map(user => [
+                      data: resp.payload?.data?.map(user => [
                         user.id,
                         _(
                           <div>
@@ -171,7 +171,7 @@ function UserGrid() {
                           </div>
                         )
                       ]),
-                      total: resp.payload.total,
+                      total: resp.payload?.total,
                     });
                   } else {
                     reject();

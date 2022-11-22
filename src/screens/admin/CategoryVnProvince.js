@@ -15,11 +15,7 @@ const CategoryVnProvince = (props) => {
       }
     }
 
-    window.addEventListener("categoryVnProvinceInit", handleCategoryVnProvince);
-
-    return () => {
-      window.removeEventListener("categoryVnProvinceInit", handleCategoryVnProvince);
-    }
+    handleCategoryVnProvince();
   }, [authState]);
 
   return (

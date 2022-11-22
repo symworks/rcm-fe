@@ -28,6 +28,7 @@ const Login = (props) => {
         } else {
           history.push('/rcm');
         }
+        return;
       }
   
       if (!authState.isLoading) {
@@ -40,12 +41,7 @@ const Login = (props) => {
       }
     }
 
-    window.addEventListener("loginInit", handleLoginInit);
-
-    return () => {
-      window.removeEventListener("loginInit", handleLoginInit);
-    }
-
+    handleLoginInit();
   }, [authState]);
 
   const validationScheme = yup.object().shape({

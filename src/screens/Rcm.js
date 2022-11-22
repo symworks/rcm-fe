@@ -88,14 +88,18 @@ const Rcm = () => {
 
   return (
     <div className="container-xl" style={{ flex: 1 }}>
-      <CategoryPopover productTypes={productTypes} adsCampaigns={adsCampaigns} isLoading={loadingMenuCount}/>
+      <CategoryPopover
+        productTypes={productTypes}
+        adsCampaigns={adsCampaigns}
+        isLoading={loadingMenuCount}
+      />
 
       {
         products?.map((product, i) => {
           return (
             <div className="mb-5" key={i}>
               <div className="d-flex justify-content-between mx-4 mb-3">
-                <p className="h5 text-uppercase">{product?.data?.length > 0 && product?.data?.[0].name}</p>
+                <p className="h5 text-uppercase">{product?.data?.length > 0 && product?.data?.[0].product_type_name}</p>
                 <a
                   href={`/rcm/product_list?product_type_id=${product?.data?.length > 0 && product?.data?.[0].product_type_id}`}
                   className="text-dark"

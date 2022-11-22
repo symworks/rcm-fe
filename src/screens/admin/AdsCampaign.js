@@ -8,18 +8,14 @@ const CategoryVnProvince = (props) => {
   const {authState} = React.useContext(AuthContextTemp);
   const history = useHistory();
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const handleCategoryVnProvince = () => {
       if (!authState.isLoggedin) {
         history.push('/login?next=category_vn_province');
       }
     }
 
-    window.addEventListener("categoryVnProvinceInit", handleCategoryVnProvince);
-
-    return () => {
-      window.removeEventListener("categoryVnProvinceInit", handleCategoryVnProvince);
-    }
+    handleCategoryVnProvince();
   }, [authState]);
 
   return (

@@ -15,11 +15,7 @@ const CategoryVnWard = (props) => {
       }
     }
 
-    window.addEventListener("categoryVnWardInit", handleCategoryVnWardInit);
-
-    return () => {
-      window.removeEventListener("categoryVnWardInit", handleCategoryVnWardInit);
-    }
+    handleCategoryVnWardInit();
   }, [authState]);
 
   return (

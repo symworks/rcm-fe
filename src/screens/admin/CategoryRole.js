@@ -15,11 +15,7 @@ const CategoryRole = (props) => {
       }
     }
 
-    window.addEventListener("categoryRoleInit", handleCategoryRoleInit);
-
-    return () => {
-      window.removeEventListener("categoryRoleInit", handleCategoryRoleInit);
-    }
+    handleCategoryRoleInit();
   }, [authState]);
 
   return (

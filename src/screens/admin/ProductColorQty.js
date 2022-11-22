@@ -15,11 +15,7 @@ const ProductVersion = (props) => {
       }
     }
 
-    window.addEventListener("productColorQtyInit", handleProductColorQtyInit);
-
-    return () => {
-      window.removeEventListener("productColorQtyInit", handleProductColorQtyInit);
-    }
+    handleProductColorQtyInit();
   }, [authState]);
 
   return (

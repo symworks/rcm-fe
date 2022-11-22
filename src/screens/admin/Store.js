@@ -15,12 +15,7 @@ const Store = (props) => {
       }
     }
 
-    window.addEventListener("storeInit", handleStoreInit);
-
-    return () => {
-      window.removeEventListener("storeInit", handleStoreInit);
-    }
-
+    handleStoreInit();
   }, [authState]);
 
   return (

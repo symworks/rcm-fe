@@ -15,11 +15,7 @@ const ProductVersion = (props) => {
       }
     }
 
-    window.addEventListener("productVersionInit", handleProductVersionInit);
-
-    return () => {
-      window.removeEventListener("productVersionInit", handleProductVersionInit);
-    }
+    handleProductVersionInit();
   }, [authState]);
 
   return (

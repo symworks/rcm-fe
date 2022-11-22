@@ -19,11 +19,7 @@ const ProductType = (props) => {
       }
     }
 
-    window.addEventListener("productTypeInit", handleProductTypeInit);
-
-    return () => {
-      window.removeEventListener("productTypeInit", handleProductTypeInit);
-    }
+    handleProductTypeInit();
   }, [authState]);
 
   return (

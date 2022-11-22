@@ -15,11 +15,7 @@ const PaymentMethod = (props) => {
       }
     }
 
-    window.addEventListener("paymentMethodInit", handlePaymentMethod);
-
-    return () => {
-      window.removeEventListener("paymentMethodInit", handlePaymentMethod);
-    }
+    handlePaymentMethod();
   }, [authState]);
 
   return (

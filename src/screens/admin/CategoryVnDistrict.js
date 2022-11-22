@@ -15,11 +15,7 @@ const CategoryVnDistrict = (props) => {
       }
     }
 
-    window.addEventListener("categoryVnDistrict", handleCategoryVnDistrictInit);
-
-    return () => {
-      window.removeEventListener("categoryVnDistrict", handleCategoryVnDistrictInit);
-    }
+    handleCategoryVnDistrictInit();
   }, [authState]);
 
   return (

@@ -14,12 +14,8 @@ const CategoryProductTag = (props) => {
         history.push('/login?next=/category_product_tag');
       }
     }
-
-    window.addEventListener("categoryProductTagInit", handleCategoryProductTagInit);
-
-    return () => {
-      window.removeEventListener("categoryProductTagInit", handleCategoryProductTagInit);
-    }
+    
+    handleCategoryProductTagInit();
   }, [authState]);
   return (
     <div

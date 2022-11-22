@@ -15,12 +15,7 @@ const User = (props) => {
       }
     }
 
-    window.addEventListener("userInit", handleUserInit);
-
-    return () => {
-      window.removeEventListener("userInit", handleUserInit);
-    }
-
+    handleUserInit();
   }, [authState]);
 
   return (

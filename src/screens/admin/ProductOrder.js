@@ -14,12 +14,8 @@ const ProductOrder = (props) => {
         history.push('/login?next=category_vn_province');
       }
     }
-
-    window.addEventListener("categoryVnProvinceInit", handleProductOrder);
-
-    return () => {
-      window.removeEventListener("categoryVnProvinceInit", handleProductOrder);
-    }
+    
+    handleProductOrder();
   }, [authState]);
 
   return (

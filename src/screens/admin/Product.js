@@ -15,11 +15,7 @@ const Product = (props) => {
       }
     }
 
-    window.addEventListener("productInit", handleProductInit);
-
-    return () => {
-      window.removeEventListener("productInit", handleProductInit);
-    }
+    handleProductInit();
   }, [authState]);
 
   return (
