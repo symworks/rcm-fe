@@ -104,6 +104,24 @@ const PublicNavbarMenu = (props) => {
                       </a>
                   </OverlayTrigger>
                 </li>
+
+                <li>
+                  <OverlayTrigger
+                    placement="bottom"
+                    overlay={
+                      <Tooltip>
+                        Giỏ hàng
+                      </Tooltip>
+                    }
+                  >
+                    <a
+                      href="/rcm/cart"
+                      className="icon-menu d-none d-sm-block d-md-none d-lg-block"
+                    >
+                      <i className="fa fa-shopping-cart"/>
+                    </a>
+                  </OverlayTrigger>
+                </li>
   
                 <li>
                   <OverlayTrigger

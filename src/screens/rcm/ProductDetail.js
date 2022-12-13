@@ -14,6 +14,7 @@ import EvaluateModal from './EvaluateModal';
 import {useHistory} from 'react-router-dom';
 import _ from 'lodash';
 import createAxios from '../../util/createAxios';
+import { NotificationContextTemp } from '../../providers/NotificationProvider';
 
 const qs = require('query-string');
 
@@ -34,6 +35,8 @@ const ProductDetail = () => {
   const [loadingProductCount, setLoadingProductCount] = React.useState(0);
 
   const [productImages, setProductImages] = React.useState([]);
+
+  const { setNotificationState } = React.useContext(NotificationContextTemp);
 
   React.useEffect(() => {
     setLoadingProductCount(prev => ++prev);
@@ -208,7 +211,53 @@ const ProductDetail = () => {
   };
 
   const handleAddToCartClick = () => {
+    if (productVersions.length === 0) {
+      console.log('Product does have no versions');
+      return;
+    }
 
+    var storageProducts = JSON.parse(localStorage.getItem('products'));
+    if (!storageProducts) {
+      storageProducts = [];
+    }
+
+    var doNotUpdateStorage = false;
+    for (let i = 0; i < storageProducts.length; i++) {
+      if (productVersions.length > 0 &&
+          storageProducts[i].productVersion &&
+          storageProducts[i].productVersion.id == productVersions[activeProductVersionIdx].id && 
+          productColorQties?.length > 0 &&
+          storageProducts[i].productColorQty &&
+          storageProducts[i].productColorQty.id == productColorQties[activeProductColorQty].id) {
+        doNotUpdateStorage = true;
+        break;
+      }
+    }
+
+    if (!doNotUpdateStorage) {
+      var needUpdate = {
+        qty: 1,
+        productVersion: {
+          id: productVersions[activeProductVersionIdx].id,
+          name: productVersions[activeProductVersionIdx].name,
+        },
+      }
+
+      if (productColorQties?.length > 0) {
+        needUpdate.productColorQty = {
+          id: productColorQties[activeProductColorQty].id,
+          name: productColorQties[activeProductColorQty].name,
+        }
+      }
+  
+      localStorage.setItem('products', JSON.stringify(_.union(storageProducts, [needUpdate])));
+    }
+
+    setNotificationState({
+      notificationType: "success",
+      dialogText: "Thêm vào giỏ hàng thành công",
+      isShow: true,
+    });
   };
 
   return (
